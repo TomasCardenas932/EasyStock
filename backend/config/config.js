@@ -8,6 +8,7 @@ module.exports = {
   development: {
     dialect: 'sqlite',
     storage: storage('easystock.dev.sqlite'),
+    seederStorage: 'sequelize',
     logging: false,
   },
   test: {
@@ -18,6 +19,7 @@ module.exports = {
   production: {
     dialect: 'sqlite',
     storage: storage('easystock.sqlite'),
+    seederStorage: 'sequelize',
     logging: false,
   },
 };

@@ -1,5 +1,8 @@
+import { Navigate, Route, Routes } from 'react-router'
 import Topbar from './components/Topbar.jsx'
 import Sidebar from './components/Sidebar.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import Articulos from './pages/Articulos.jsx'
 import './App.css'
 
 function App() {
@@ -11,8 +14,11 @@ function App() {
         <Sidebar />
 
         <main className="app-content">
-          <h1>Dashboard</h1>
-          <p>Contenido de la aplicacion.</p>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/articulos" element={<Articulos />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </main>
       </div>
     </div>

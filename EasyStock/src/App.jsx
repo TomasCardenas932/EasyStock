@@ -1,4 +1,5 @@
 import Topbar from './components/Topbar.jsx'
+import Sidebar from './components/Sidebar.jsx'
 import './App.css'
 
 function App() {
@@ -6,10 +7,14 @@ function App() {
     <div className="app">
       <Topbar appName="EasyStock" userName="Usuario" />
 
-      <main className="app-content">
-        <h1>Inicio</h1>
-        <p>Contenido de la aplicacion.</p>
-      </main>
+      <div className="app-body">
+        <Sidebar />
+
+        <main className="app-content">
+          <h1>Dashboard</h1>
+          <p>Contenido de la aplicacion.</p>
+        </main>
+      </div>
     </div>
   )
 }

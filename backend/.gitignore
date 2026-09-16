@@ -1,0 +1,5 @@
+node_modules
+*.log
+
+# Bases de datos locales (se regeneran con npm run db:migrate)
+database/*.sqlite

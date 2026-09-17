@@ -62,3 +62,50 @@ p {
   margin: 0;
   color: var(--text-muted);
 }
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primario {
+  background: var(--gray-1000);
+  border-color: var(--gray-1000);
+  color: var(--gray-0);
+}
+
+.btn-primario:not(:disabled):hover {
+  background: var(--gray-800);
+}
+
+.btn-secundario {
+  background: var(--gray-0);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+}
+
+.btn-secundario:not(:disabled):hover {
+  background: var(--gray-100);
+  border-color: var(--gray-500);
+}

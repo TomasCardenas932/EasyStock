@@ -1,0 +1,140 @@
+.producto-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-descripcion {
+  color: var(--gray-700);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.form-campo.span-2 {
+  grid-column: span 2;
+}
+
+.form-campo.span-4 {
+  grid-column: span 4;
+}
+
+.form-campo label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.form-opcional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.form-campo input {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--gray-900);
+  background: var(--gray-0);
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+}
+
+.form-campo input::placeholder {
+  color: var(--gray-400);
+}
+
+.form-campo input:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: -1px;
+  border-color: var(--gray-1000);
+}
+
+.form-campo input:disabled {
+  background: var(--gray-100);
+  color: var(--gray-500);
+}
+
+.form-campo input[aria-invalid='true'] {
+  border: 2px solid var(--gray-1000);
+  padding: 9px 11px;
+}
+
+.form-error {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-1000);
+}
+
+.form-error::before {
+  content: '! ';
+}
+
+.form-error-general,
+.baja-advertencia {
+  padding: 12px 14px;
+  border-left: 4px solid var(--gray-1000);
+  background: var(--gray-100);
+  color: var(--gray-900);
+  font-size: 14px;
+}
+
+.form-error-general {
+  font-weight: 600;
+}
+
+.form-acciones {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.producto-resumen {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--gray-50);
+}
+
+.producto-resumen dt {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.producto-resumen dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--gray-900);
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+@media (max-width: 560px) {
+  .form-campo.span-2,
+  .form-campo.span-4 {
+    grid-column: 1 / -1;
+  }
+
+  .form-acciones .btn {
+    flex: 1;
+  }
+}

@@ -22,6 +22,8 @@ function Articulos() {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [version, setVersion] = useState(0)
+  const [busqueda, setBusqueda] = useState('')
+  const [busquedaAplicada, setBusquedaAplicada] = useState('')
   const [modal, setModal] = useState(null)
   const [aviso, setAviso] = useState(null)
 
@@ -30,7 +32,7 @@ function Articulos() {
 
     async function cargarArticulos() {
       try {
-        setArticulos(await listarProductos({ signal: controller.signal }))
+        setArticulos(await listarProductos(busquedaAplicada, { signal: controller.signal }))
         setError(null)
       } catch (err) {
         if (err.name !== 'AbortError') {
@@ -43,7 +45,13 @@ function Articulos() {
 
     cargarArticulos()
     return () => controller.abort()
-  }, [version])
+  }, [version, busquedaAplicada])
+
+  // Espera a que el usuario deje de escribir antes de consultar al backend.
+  useEffect(() => {
+    const timer = setTimeout(() => setBusquedaAplicada(busqueda), 300)
+    return () => clearTimeout(timer)
+  }, [busqueda])
 
   useEffect(() => {
     if (!aviso) return
@@ -59,13 +67,20 @@ function Articulos() {
 
   const ModalActivo = modal ? MODALES[modal] : null
   const sinArticulos = articulos.length === 0
+  const buscando = busquedaAplicada.trim() !== ''
 
   return (
     <section className="articulos">
       <header className="articulos-header">
         <div>
           <h1>Articulos</h1>
-          {!cargando && !error && <p>{articulos.length} articulos registrados</p>}
+          {!cargando && !error && (
+            <p>
+              {buscando
+                ? `${articulos.length} articulos encontrados`
+                : `${articulos.length} articulos registrados`}
+            </p>
+          )}
         </div>
 
         <div className="articulos-acciones">
@@ -76,7 +91,6 @@ function Articulos() {
             type="button"
             className="btn btn-secundario"
             onClick={() => setModal('modificar')}
-            disabled={sinArticulos}
           >
             Modificar
           </button>
@@ -84,12 +98,34 @@ function Articulos() {
             type="button"
             className="btn btn-secundario"
             onClick={() => setModal('baja')}
-            disabled={sinArticulos}
           >
             Baja
           </button>
         </div>
       </header>
+
+      <div className="articulos-buscador">
+        <label className="sr-only" htmlFor="buscador">
+          Buscar articulos
+        </label>
+        <input
+          id="buscador"
+          type="search"
+          autoComplete="off"
+          placeholder="Buscar por codigo o nombre"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        {busqueda && (
+          <button
+            type="button"
+            className="articulos-buscador-limpiar"
+            onClick={() => setBusqueda('')}
+          >
+            Limpiar
+          </button>
+        )}
+      </div>
 
       <div className="articulos-aviso" role="status">
         {aviso}
@@ -100,7 +136,11 @@ function Articulos() {
       {error && <p className="articulos-estado is-error">{error}</p>}
 
       {!cargando && !error && sinArticulos && (
-        <p className="articulos-estado">No hay articulos cargados.</p>
+        <p className="articulos-estado">
+          {buscando
+            ? `Ningun articulo coincide con "${busquedaAplicada}".`
+            : 'No hay articulos cargados.'}
+        </p>
       )}
 
       {!cargando && !error && !sinArticulos && (

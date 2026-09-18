@@ -35,7 +35,10 @@ async function request(url, { body, ...options } = {}) {
 
 const urlProducto = (codigo) => `${BASE}/${encodeURIComponent(codigo.trim())}`
 
-const listarProductos = (options) => request(BASE, options)
+const listarProductos = (buscar = '', options) => {
+  const query = buscar.trim() ? `?buscar=${encodeURIComponent(buscar.trim())}` : ''
+  return request(BASE + query, options)
+}
 
 const obtenerProducto = (codigo) => request(urlProducto(codigo))
 

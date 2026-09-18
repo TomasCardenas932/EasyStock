@@ -85,3 +85,59 @@
   font-family: ui-monospace, Consolas, monospace;
   color: var(--gray-700);
 }
+
+.articulos-buscador {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.articulos-buscador input {
+  flex: 1;
+  max-width: 420px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--gray-900);
+  background: var(--surface);
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+}
+
+.articulos-buscador input::placeholder {
+  color: var(--gray-400);
+}
+
+.articulos-buscador input:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: -1px;
+  border-color: var(--gray-1000);
+}
+
+.articulos-buscador-limpiar {
+  padding: 0 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--gray-700);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.articulos-buscador-limpiar:hover {
+  color: var(--gray-1000);
+}
+
+.articulos-buscador-limpiar:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: 2px;
+}
+
+/* Chrome dibuja su propia cruz de borrado: se oculta para no duplicar "Limpiar" */
+.articulos-buscador input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}

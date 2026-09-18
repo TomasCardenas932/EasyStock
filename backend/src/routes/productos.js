@@ -1,6 +1,7 @@
 'use strict';
 
 const { Router } = require('express');
+const { literal } = require('sequelize');
 const { Producto } = require('../../models');
 
 const router = Router();
@@ -27,9 +28,28 @@ async function buscarPorCodigo(req, res) {
   return producto;
 }
 
-// GET /api/productos -> lista completa de articulos
+// Escapa los comodines de LIKE (% y _) para buscarlos como texto literal.
+// El caracter de escape es "!" y no "\\": Sequelize descarta la barra invertida
+// al interpolar el literal y SQLite termina recibiendo ESCAPE ''.
+const ESCAPE_LIKE = '!';
+
+function patronBusqueda(texto) {
+  const escapado = texto.replace(/[!%_]/g, (caracter) => ESCAPE_LIKE + caracter);
+  return `%${escapado}%`;
+}
+
+// GET /api/productos?buscar=texto -> lista de articulos, filtrada por codigo o nombre
 router.get('/', async (req, res) => {
-  const productos = await Producto.findAll({ order: [['nombre', 'ASC']] });
+  const buscado = String(req.query.buscar ?? '').trim();
+
+  const productos = await Producto.findAll({
+    where: buscado
+      ? literal("(codigo LIKE :patron ESCAPE '!' OR nombre LIKE :patron ESCAPE '!')")
+      : undefined,
+    replacements: { patron: patronBusqueda(buscado) },
+    order: [['nombre', 'ASC']],
+  });
+
   res.json(productos);
 });
 

@@ -34,6 +34,8 @@ function ConfirmarBaja({ producto, onVolver, onConfirmar }) {
         <dd className="mono">{producto.codigo}</dd>
         <dt>Nombre</dt>
         <dd>{producto.nombre}</dd>
+        <dt>Proveedor</dt>
+        <dd>{producto.proveedor?.nombre ?? 'Sin proveedor'}</dd>
         <dt>Stock actual</dt>
         <dd>{producto.stock}</dd>
       </dl>

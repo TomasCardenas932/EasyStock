@@ -40,8 +40,10 @@
   color: var(--text-muted);
 }
 
-.form-campo input {
+.form-campo input,
+.form-campo select {
   width: 100%;
+  height: 42px;
   padding: 10px 12px;
   font: inherit;
   font-size: 15px;
@@ -55,18 +57,21 @@
   color: var(--gray-400);
 }
 
-.form-campo input:focus-visible {
+.form-campo input:focus-visible,
+.form-campo select:focus-visible {
   outline: 2px solid var(--gray-1000);
   outline-offset: -1px;
   border-color: var(--gray-1000);
 }
 
-.form-campo input:disabled {
+.form-campo input:disabled,
+.form-campo select:disabled {
   background: var(--gray-100);
   color: var(--gray-500);
 }
 
-.form-campo input[aria-invalid='true'] {
+.form-campo input[aria-invalid='true'],
+.form-campo select[aria-invalid='true'] {
   border: 2px solid var(--gray-1000);
   padding: 9px 11px;
 }

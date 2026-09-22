@@ -153,7 +153,7 @@ function Articulos() {
                 <th className="num">Stock</th>
                 <th className="num">Costo</th>
                 <th className="num">Precio publico</th>
-                <th className="num">Proveedor</th>
+                <th>Proveedor</th>
               </tr>
             </thead>
             <tbody>
@@ -163,8 +163,10 @@ function Articulos() {
                   <td>{a.nombre}</td>
                   <td className="num">{a.stock}</td>
                   <td className="num">{formatoPesos.format(a.costo)}</td>
-                  <td className="num">{formatoPesos.format(a.precioPublico)}</td>
-                  <td className="num">{a.proveedor ?? '-'}</td>
+                  <td className="num">
+                    {a.precioPublico == null ? '-' : formatoPesos.format(a.precioPublico)}
+                  </td>
+                  <td>{a.proveedor?.nombre ?? '-'}</td>
                 </tr>
               ))}
             </tbody>

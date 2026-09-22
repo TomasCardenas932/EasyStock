@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { ApiError } from '../../api/productos.js'
+import { ApiError } from '../../api/http.js'
+import { listarProveedores } from '../../api/proveedores.js'
 import './productos.css'
 
 const CAMPOS = [
@@ -8,7 +9,7 @@ const CAMPOS = [
   { name: 'stock', label: 'Stock', placeholder: 'Ej: 12', numerico: true, span: 2 },
   { name: 'costo', label: 'Costo ($)', placeholder: 'Ej: 4500', numerico: true, span: 2 },
   { name: 'precioPublico', label: 'Precio publico ($)', placeholder: 'Ej: 7800', numerico: true, span: 2 },
-  { name: 'proveedor', label: 'Proveedor (N°)', placeholder: 'Ej: 2', numerico: true, opcional: true, span: 2 },
+  { name: 'proveedorId', label: 'Proveedor', seleccion: true, opcional: true, span: 2 },
 ]
 
 const ENTERO_NO_NEGATIVO = /^\d+$/
@@ -39,7 +40,7 @@ function aDatos(valores) {
     stock: Number(valores.stock),
     costo: Number(valores.costo),
     precioPublico: Number(valores.precioPublico),
-    proveedor: valores.proveedor.trim() === '' ? null : Number(valores.proveedor),
+    proveedorId: valores.proveedorId === '' ? null : Number(valores.proveedorId),
   }
 }
 
@@ -49,11 +50,32 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
   const [errores, setErrores] = useState({})
   const [errorGeneral, setErrorGeneral] = useState(null)
   const [guardando, setGuardando] = useState(false)
+  // null mientras se cargan: el selector queda deshabilitado hasta tener lista.
+  const [proveedores, setProveedores] = useState(null)
+  const [errorProveedores, setErrorProveedores] = useState(null)
   const formRef = useRef(null)
 
   // Enfoca el primer campo tambien cuando el formulario aparece en un segundo paso.
   useEffect(() => {
     formRef.current.querySelector('[data-autofocus]')?.focus()
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function cargarProveedores() {
+      try {
+        setProveedores(await listarProveedores({ signal: controller.signal }))
+      } catch (err) {
+        if (err.name === 'AbortError') return
+        // El proveedor es opcional: el resto del formulario sigue usable.
+        setProveedores([])
+        setErrorProveedores('No se pudo cargar la lista de proveedores.')
+      }
+    }
+
+    cargarProveedores()
+    return () => controller.abort()
   }, [])
 
   function handleChange(event) {
@@ -86,35 +108,60 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
     }
   }
 
+  function renderCampo(campo, id, error) {
+    const comunes = {
+      id,
+      name: campo.name,
+      value: valores[campo.name],
+      onChange: handleChange,
+      'aria-invalid': error ? true : undefined,
+      'aria-describedby': error ? `${id}-error` : undefined,
+    }
+
+    if (campo.seleccion) {
+      const cargando = proveedores === null
+      return (
+        <select {...comunes} disabled={guardando || cargando}>
+          <option value="">{cargando ? 'Cargando proveedores...' : 'Sin proveedor'}</option>
+          {(proveedores ?? []).map((proveedor) => (
+            <option key={proveedor.id} value={String(proveedor.id)}>
+              {proveedor.nombre}
+            </option>
+          ))}
+        </select>
+      )
+    }
+
+    return (
+      <input
+        {...comunes}
+        type="text"
+        inputMode={campo.numerico ? 'numeric' : undefined}
+        autoComplete="off"
+        placeholder={campo.placeholder}
+        disabled={guardando}
+        data-autofocus={campo.name === CAMPOS[0].name ? '' : undefined}
+      />
+    )
+  }
+
   return (
     <form ref={formRef} className="producto-form" onSubmit={handleSubmit} noValidate>
       <div className="form-grid">
-        {CAMPOS.map((campo, i) => {
+        {CAMPOS.map((campo) => {
           const id = `producto-${campo.name}`
           const error = errores[campo.name]
+          const aviso = campo.seleccion ? errorProveedores : null
           return (
             <div key={campo.name} className={`form-campo span-${campo.span}`}>
               <label htmlFor={id}>
                 {campo.label}
                 {campo.opcional && <span className="form-opcional"> (opcional)</span>}
               </label>
-              <input
-                id={id}
-                name={campo.name}
-                type="text"
-                inputMode={campo.numerico ? 'numeric' : undefined}
-                autoComplete="off"
-                placeholder={campo.placeholder}
-                value={valores[campo.name]}
-                onChange={handleChange}
-                disabled={guardando}
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? `${id}-error` : undefined}
-                data-autofocus={i === 0 ? '' : undefined}
-              />
-              {error && (
+              {renderCampo(campo, id, error)}
+              {(error || aviso) && (
                 <span id={`${id}-error`} className="form-error">
-                  {error}
+                  {error ?? aviso}
                 </span>
               )}
             </div>

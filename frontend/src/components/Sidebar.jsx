@@ -2,9 +2,8 @@ import { NavLink } from 'react-router'
 import './Sidebar.css'
 
 // Pantallas definidas en el BRD v1.2, seccion 5.
-// Solo las secciones con `path` navegan; el resto todavia no esta implementado.
 const SECTIONS = [
-  { id: 'SC001', label: 'Dashboard' },
+  { id: 'SC001', label: 'Dashboard', path: '/Dashboard' },
   { id: 'SC002', label: 'Articulos', path: '/articulos' },
   { id: 'SC003', label: 'Ventas' },
   { id: 'SC004', label: 'Movimientos' },

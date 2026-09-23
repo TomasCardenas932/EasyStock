@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Modal from '../Modal.jsx'
-import BuscarPorCodigo from './BuscarPorCodigo.jsx'
+import BuscarPorClave from '../BuscarPorClave.jsx'
 import ProductoForm from './ProductoForm.jsx'
-import { actualizarProducto } from '../../api/productos.js'
+import { actualizarProducto, obtenerProducto } from '../../api/productos.js'
 
 function ModificarProducto({ onClose, onExito }) {
   const [producto, setProducto] = useState(null)
@@ -22,8 +22,12 @@ function ModificarProducto({ onClose, onExito }) {
           onCancelar={onClose}
         />
       ) : (
-        <BuscarPorCodigo
+        <BuscarPorClave
           descripcion="Ingresa el codigo del articulo que queres modificar."
+          etiqueta="Codigo del articulo"
+          placeholder="Ej: FIL-0001"
+          mensajeVacio="Ingresa el codigo del articulo"
+          obtener={obtenerProducto}
           onEncontrado={setProducto}
           onCancelar={onClose}
         />

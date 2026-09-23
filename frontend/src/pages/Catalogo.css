@@ -1,4 +1,4 @@
-.articulos-header {
+.catalogo-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -7,17 +7,17 @@
   margin-bottom: 16px;
 }
 
-.articulos-acciones {
+.catalogo-acciones {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.articulos-aviso:empty {
+.catalogo-aviso:empty {
   display: none;
 }
 
-.articulos-aviso {
+.catalogo-aviso {
   margin-bottom: 16px;
   padding: 12px 16px;
   background: var(--gray-900);
@@ -27,14 +27,14 @@
   font-weight: 600;
 }
 
-.articulos-estado {
+.catalogo-estado {
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
 }
 
-.articulos-estado.is-error {
+.catalogo-estado.is-error {
   color: var(--gray-900);
   border-color: var(--gray-900);
   font-weight: 500;
@@ -86,13 +86,13 @@
   color: var(--gray-700);
 }
 
-.articulos-buscador {
+.catalogo-buscador {
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-.articulos-buscador input {
+.catalogo-buscador input {
   flex: 1;
   max-width: 420px;
   padding: 10px 12px;
@@ -104,17 +104,17 @@
   border-radius: 4px;
 }
 
-.articulos-buscador input::placeholder {
+.catalogo-buscador input::placeholder {
   color: var(--gray-400);
 }
 
-.articulos-buscador input:focus-visible {
+.catalogo-buscador input:focus-visible {
   outline: 2px solid var(--gray-1000);
   outline-offset: -1px;
   border-color: var(--gray-1000);
 }
 
-.articulos-buscador-limpiar {
+.catalogo-buscador-limpiar {
   padding: 0 12px;
   font: inherit;
   font-size: 14px;
@@ -126,18 +126,59 @@
   text-decoration: underline;
 }
 
-.articulos-buscador-limpiar:hover {
+.catalogo-buscador-limpiar:hover {
   color: var(--gray-1000);
 }
 
-.articulos-buscador-limpiar:focus-visible {
+.catalogo-buscador-limpiar:focus-visible {
   outline: 2px solid var(--gray-1000);
   outline-offset: 2px;
 }
 
 /* Chrome dibuja su propia cruz de borrado: se oculta para no duplicar "Limpiar" */
-.articulos-buscador input::-webkit-search-cancel-button {
+.catalogo-buscador input::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;
+}
+
+/* Conmutador entre las tablas del sistema: los botones de ABM y el buscador
+   son los mismos, solo cambia la entidad que se esta viendo. */
+.catalogo-conmutador {
+  display: inline-flex;
+  margin-bottom: 20px;
+  padding: 4px;
+  gap: 4px;
+  background: var(--gray-100);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.catalogo-conmutador-opcion {
+  padding: 8px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-600);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.catalogo-conmutador-opcion:not([aria-pressed='true']):hover {
+  color: var(--gray-1000);
+  background: var(--gray-0);
+}
+
+.catalogo-conmutador-opcion[aria-pressed='true'] {
+  color: var(--gray-0);
+  background: var(--gray-1000);
+  border-color: var(--gray-1000);
+  cursor: default;
+}
+
+.catalogo-conmutador-opcion:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: 2px;
 }

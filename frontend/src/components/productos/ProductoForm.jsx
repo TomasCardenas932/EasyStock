@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ApiError } from '../../api/http.js'
 import { listarProveedores } from '../../api/proveedores.js'
-import './productos.css'
+import '../abm.css'
 
 const CAMPOS = [
   { name: 'codigo', label: 'Codigo', placeholder: 'Ej: FIL-0002', span: 2 },
@@ -65,7 +65,7 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
 
     async function cargarProveedores() {
       try {
-        setProveedores(await listarProveedores({ signal: controller.signal }))
+        setProveedores(await listarProveedores('', { signal: controller.signal }))
       } catch (err) {
         if (err.name === 'AbortError') return
         // El proveedor es opcional: el resto del formulario sigue usable.
@@ -146,7 +146,7 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
   }
 
   return (
-    <form ref={formRef} className="producto-form" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="abm-form" onSubmit={handleSubmit} noValidate>
       <div className="form-grid">
         {CAMPOS.map((campo) => {
           const id = `producto-${campo.name}`

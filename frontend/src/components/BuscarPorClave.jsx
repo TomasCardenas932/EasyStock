@@ -1,13 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
-import { obtenerProducto } from '../../api/productos.js'
-import './productos.css'
+import { useEffect, useId, useRef, useState } from 'react'
+import './abm.css'
 
-// Primer paso de la modificacion y la baja: ubicar el producto por su codigo.
-function BuscarPorCodigo({ descripcion, onEncontrado, onCancelar }) {
-  const [codigo, setCodigo] = useState('')
+// Primer paso de la modificacion y la baja: ubicar el registro por su clave
+// (el codigo en articulos, el nombre en proveedores).
+function BuscarPorClave({
+  descripcion,
+  etiqueta,
+  placeholder,
+  mensajeVacio,
+  obtener,
+  onEncontrado,
+  onCancelar,
+}) {
+  const [clave, setClave] = useState('')
   const [error, setError] = useState(null)
   const [buscando, setBuscando] = useState(false)
   const inputRef = useRef(null)
+  const id = useId()
 
   // Enfoca el campo tambien al volver desde la confirmacion de baja.
   useEffect(() => {
@@ -16,15 +25,15 @@ function BuscarPorCodigo({ descripcion, onEncontrado, onCancelar }) {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    if (!codigo.trim()) {
-      setError('Ingresa el codigo del producto')
+    if (!clave.trim()) {
+      setError(mensajeVacio)
       return
     }
 
     setBuscando(true)
     setError(null)
     try {
-      onEncontrado(await obtenerProducto(codigo))
+      onEncontrado(await obtener(clave))
     } catch (err) {
       setError(err.message)
       setBuscando(false)
@@ -32,29 +41,29 @@ function BuscarPorCodigo({ descripcion, onEncontrado, onCancelar }) {
   }
 
   return (
-    <form className="producto-form" onSubmit={handleSubmit} noValidate>
+    <form className="abm-form" onSubmit={handleSubmit} noValidate>
       <p className="form-descripcion">{descripcion}</p>
 
       <div className="form-campo">
-        <label htmlFor="buscar-codigo">Codigo del producto</label>
+        <label htmlFor={id}>{etiqueta}</label>
         <input
           ref={inputRef}
-          id="buscar-codigo"
+          id={id}
           type="text"
           autoComplete="off"
-          placeholder="Ej: FIL-0001"
-          value={codigo}
+          placeholder={placeholder}
+          value={clave}
           onChange={(e) => {
-            setCodigo(e.target.value)
+            setClave(e.target.value)
             setError(null)
           }}
           disabled={buscando}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? 'buscar-codigo-error' : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
           data-autofocus=""
         />
         {error && (
-          <span id="buscar-codigo-error" className="form-error">
+          <span id={`${id}-error`} className="form-error">
             {error}
           </span>
         )}
@@ -72,4 +81,4 @@ function BuscarPorCodigo({ descripcion, onEncontrado, onCancelar }) {
   )
 }
 
-export default BuscarPorCodigo
+export default BuscarPorClave

@@ -1,14 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { ApiError } from '../../api/http.js'
 import { listarProveedores } from '../../api/proveedores.js'
-import './productos.css'
+import '../abm.css'
 
 const CAMPOS = [
   { name: 'codigo', label: 'Codigo', placeholder: 'Ej: FIL-0002', span: 2 },
   { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Filtro de aire Honda Wave 110', span: 4 },
   { name: 'stock', label: 'Stock', placeholder: 'Ej: 12', numerico: true, span: 2 },
   { name: 'costo', label: 'Costo ($)', placeholder: 'Ej: 4500', numerico: true, span: 2 },
-  { name: 'precioPublico', label: 'Precio publico ($)', placeholder: 'Ej: 7800', numerico: true, span: 2 },
+  // Opcional: al dar de alta se puede cargar solo el costo y fijar el precio
+  // despues (BRD v1.2, regla 2).
+  {
+    name: 'precioPublico',
+    label: 'Precio publico ($)',
+    placeholder: 'Ej: 7800',
+    numerico: true,
+    opcional: true,
+    span: 2,
+  },
   { name: 'proveedorId', label: 'Proveedor', seleccion: true, opcional: true, span: 2 },
 ]
 
@@ -39,7 +48,8 @@ function aDatos(valores) {
     nombre: valores.nombre.trim(),
     stock: Number(valores.stock),
     costo: Number(valores.costo),
-    precioPublico: Number(valores.precioPublico),
+    // Vacio viaja como null: Number('') daria 0 y guardaria un precio de $0.
+    precioPublico: valores.precioPublico.trim() === '' ? null : Number(valores.precioPublico),
     proveedorId: valores.proveedorId === '' ? null : Number(valores.proveedorId),
   }
 }
@@ -65,7 +75,7 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
 
     async function cargarProveedores() {
       try {
-        setProveedores(await listarProveedores({ signal: controller.signal }))
+        setProveedores(await listarProveedores('', { signal: controller.signal }))
       } catch (err) {
         if (err.name === 'AbortError') return
         // El proveedor es opcional: el resto del formulario sigue usable.
@@ -146,7 +156,7 @@ function ProductoForm({ producto, textoGuardar, onGuardar, onCancelar }) {
   }
 
   return (
-    <form ref={formRef} className="producto-form" onSubmit={handleSubmit} noValidate>
+    <form ref={formRef} className="abm-form" onSubmit={handleSubmit} noValidate>
       <div className="form-grid">
         {CAMPOS.map((campo) => {
           const id = `producto-${campo.name}`

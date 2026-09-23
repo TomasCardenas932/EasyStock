@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Modal from '../Modal.jsx'
-import BuscarPorCodigo from './BuscarPorCodigo.jsx'
-import { eliminarProducto } from '../../api/productos.js'
-import './productos.css'
+import BuscarPorClave from '../BuscarPorClave.jsx'
+import { eliminarProducto, obtenerProducto } from '../../api/productos.js'
+import '../abm.css'
 
 function ConfirmarBaja({ producto, onVolver, onConfirmar }) {
   const [eliminando, setEliminando] = useState(false)
@@ -26,10 +26,10 @@ function ConfirmarBaja({ producto, onVolver, onConfirmar }) {
   }
 
   return (
-    <div className="producto-form">
+    <div className="abm-form">
       <p className="form-descripcion">Vas a dar de baja el siguiente articulo:</p>
 
-      <dl className="producto-resumen">
+      <dl className="abm-resumen">
         <dt>Codigo</dt>
         <dd className="mono">{producto.codigo}</dd>
         <dt>Nombre</dt>
@@ -85,8 +85,12 @@ function BajaProducto({ onClose, onExito }) {
           onConfirmar={handleConfirmar}
         />
       ) : (
-        <BuscarPorCodigo
+        <BuscarPorClave
           descripcion="Ingresa el codigo del articulo que queres dar de baja."
+          etiqueta="Codigo del articulo"
+          placeholder="Ej: FIL-0001"
+          mensajeVacio="Ingresa el codigo del articulo"
+          obtener={obtenerProducto}
           onEncontrado={setProducto}
           onCancelar={onClose}
         />

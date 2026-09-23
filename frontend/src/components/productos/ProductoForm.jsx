@@ -8,7 +8,16 @@ const CAMPOS = [
   { name: 'nombre', label: 'Nombre', placeholder: 'Ej: Filtro de aire Honda Wave 110', span: 4 },
   { name: 'stock', label: 'Stock', placeholder: 'Ej: 12', numerico: true, span: 2 },
   { name: 'costo', label: 'Costo ($)', placeholder: 'Ej: 4500', numerico: true, span: 2 },
-  { name: 'precioPublico', label: 'Precio publico ($)', placeholder: 'Ej: 7800', numerico: true, span: 2 },
+  // Opcional: al dar de alta se puede cargar solo el costo y fijar el precio
+  // despues (BRD v1.2, regla 2).
+  {
+    name: 'precioPublico',
+    label: 'Precio publico ($)',
+    placeholder: 'Ej: 7800',
+    numerico: true,
+    opcional: true,
+    span: 2,
+  },
   { name: 'proveedorId', label: 'Proveedor', seleccion: true, opcional: true, span: 2 },
 ]
 
@@ -39,7 +48,8 @@ function aDatos(valores) {
     nombre: valores.nombre.trim(),
     stock: Number(valores.stock),
     costo: Number(valores.costo),
-    precioPublico: Number(valores.precioPublico),
+    // Vacio viaja como null: Number('') daria 0 y guardaria un precio de $0.
+    precioPublico: valores.precioPublico.trim() === '' ? null : Number(valores.precioPublico),
     proveedorId: valores.proveedorId === '' ? null : Number(valores.proveedorId),
   }
 }

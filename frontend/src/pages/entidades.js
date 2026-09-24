@@ -7,7 +7,7 @@ import BajaProveedor from '../components/proveedores/BajaProveedor.jsx'
 import { listarProductos } from '../api/productos.js'
 import { listarProveedores } from '../api/proveedores.js'
 
-const formatoPesos = new Intl.NumberFormat('es-AR', {
+export const formatoPesos = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
   maximumFractionDigits: 0,

@@ -1,0 +1,21 @@
+.ventas {
+  display: flex;
+  flex-direction: column;
+  max-width: 60%;
+  max-height: calc((100vh - var(--topbar-height)) * 0.75);
+}
+
+.ventas h1 {
+  margin-bottom: 16px;
+}
+
+.ventas-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ventas-lista thead th {
+  position: sticky;
+  top: 0;
+}

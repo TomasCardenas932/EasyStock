@@ -1,12 +1,15 @@
 .ventas {
   display: flex;
-  flex-direction: column;
-  max-width: 60%;
-  max-height: calc((100vh - var(--topbar-height)) * 0.75);
+  align-items: flex-start;
+  gap: 24px;
 }
 
-.ventas h1 {
-  margin-bottom: 16px;
+.ventas-listado {
+  flex: 0 0 60%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: calc((100vh - var(--topbar-height)) * 0.75);
 }
 
 .ventas-lista {
@@ -18,4 +21,53 @@
 .ventas-lista thead th {
   position: sticky;
   top: 0;
+}
+
+/* Con el buscador al lado la columna es angosta: los nombres largos bajan de
+   linea en vez de forzar scroll horizontal. */
+.ventas-lista .ventas-nombre {
+  white-space: normal;
+}
+
+/* Ocupa el ancho que deja libre el listado. */
+.ventas-buscador {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.ventas-buscador-titulo {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.ventas-buscador .catalogo-buscador {
+  margin-bottom: 0;
+}
+
+.ventas-buscador .catalogo-buscador input {
+  min-width: 0;
+  max-width: none;
+}
+
+/* En pantallas angostas no entran dos columnas: el buscador pasa arriba. */
+@media (max-width: 768px) {
+  .ventas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ventas-listado {
+    flex-basis: auto;
+  }
+
+  .ventas-buscador {
+    order: -1;
+  }
 }

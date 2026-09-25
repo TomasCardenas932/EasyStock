@@ -12,39 +12,72 @@
   max-height: calc((100vh - var(--topbar-height)) * 0.75);
 }
 
-.ventas-lista {
+/* Comun a las dos tablas: si no entran, scrollean dentro de su caja. */
+.ventas-tabla {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
 }
 
-.ventas-lista thead th {
+/* Sticky en el thead y no en cada th: con celdas sueltas el navegador deja
+   lineas finas entre columnas cuando la pantalla tiene zoom. */
+.ventas-tabla thead {
   position: sticky;
   top: 0;
+  z-index: 1;
 }
 
-/* Con el buscador al lado la columna es angosta: los nombres largos bajan de
-   linea en vez de forzar scroll horizontal. */
-.ventas-lista .ventas-nombre {
+/* Las columnas son angostas: los nombres largos bajan de linea en vez de
+   forzar scroll horizontal. */
+.ventas-tabla .ventas-nombre {
   white-space: normal;
 }
 
-/* Ocupa el ancho que deja libre el listado. */
-.ventas-buscador {
+.ventas-lista tbody tr {
+  cursor: pointer;
+}
+
+.ventas-lista tbody tr:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: -2px;
+}
+
+/* Fila elegida: fondo marcado y barra a la izquierda, como el item activo de
+   la sidebar. */
+.ventas-lista tbody tr.is-seleccionado td {
+  background: var(--gray-200);
+  color: var(--gray-1000);
+  font-weight: 600;
+}
+
+.ventas-lista tbody tr.is-seleccionado td:first-child {
+  box-shadow: inset 3px 0 0 var(--gray-1000);
+}
+
+/* Columna derecha: buscador arriba y articulos agregados debajo. Ocupa el
+   ancho que deja libre el listado. */
+.ventas-lateral {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-height: calc((100vh - var(--topbar-height)) * 0.75);
+}
+
+.ventas-titulo {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.ventas-buscador {
   padding: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-}
-
-.ventas-buscador-titulo {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--gray-900);
 }
 
 .ventas-buscador .catalogo-buscador {
@@ -56,7 +89,29 @@
   max-width: none;
 }
 
-/* En pantallas angostas no entran dos columnas: el buscador pasa arriba. */
+.ventas-agregados {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ventas-agregados .catalogo-estado {
+  font-size: 14px;
+}
+
+/* La columna derecha es angosta: celdas mas compactas para que las tres
+   columnas entren sin scroll horizontal. */
+.ventas-agregados .tabla {
+  font-size: 13px;
+}
+
+.ventas-agregados .tabla th,
+.ventas-agregados .tabla td {
+  padding: 8px 10px;
+}
+
+/* En pantallas angostas no entran dos columnas: buscador y agregados pasan
+   arriba. */
 @media (max-width: 768px) {
   .ventas {
     flex-direction: column;
@@ -67,7 +122,7 @@
     flex-basis: auto;
   }
 
-  .ventas-buscador {
+  .ventas-lateral {
     order: -1;
   }
 }

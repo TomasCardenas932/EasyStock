@@ -86,6 +86,8 @@ function Ventas() {
   }
 
   const buscando = busquedaAplicada.trim() !== ''
+  // Un articulo sin precio publico no suma.
+  const total = agregados.reduce((suma, agregado) => suma + (agregado.precioPublico ?? 0), 0)
 
   return (
     <section className="ventas">
@@ -162,32 +164,38 @@ function Ventas() {
         <div className="ventas-agregados">
           <h2 className="ventas-titulo">Articulos agregados</h2>
 
-          {agregados.length === 0 ? (
-            <p className="catalogo-estado">
-              Selecciona un articulo y apreta Enter para agregarlo.
-            </p>
-          ) : (
-            <div className="tabla-contenedor ventas-tabla">
-              <table className="tabla">
-                <thead>
-                  <tr>
-                    <th>Codigo</th>
-                    <th>Nombre</th>
-                    <th className="num">Precio</th>
+          {/* La caja se muestra siempre, aunque este vacia, para que llegue
+              hasta el total sin dejar un hueco en la columna. */}
+          <div className="tabla-contenedor ventas-tabla">
+            <table className="tabla">
+              <thead>
+                <tr>
+                  <th>Codigo</th>
+                  <th>Nombre</th>
+                  <th className="num">Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {agregados.map((agregado) => (
+                  <tr key={agregado.clave}>
+                    <td className="mono">{agregado.codigo}</td>
+                    <td className="ventas-nombre">{agregado.nombre}</td>
+                    <td className="num">{formatoPrecio(agregado.precioPublico)}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {agregados.map((agregado) => (
-                    <tr key={agregado.clave}>
-                      <td className="mono">{agregado.codigo}</td>
-                      <td className="ventas-nombre">{agregado.nombre}</td>
-                      <td className="num">{formatoPrecio(agregado.precioPublico)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+            {agregados.length === 0 && (
+              <p className="ventas-agregados-vacio">
+                Selecciona un articulo y apreta Enter para agregarlo.
+              </p>
+            )}
+          </div>
+
+          <div className="ventas-total" role="status">
+            <span className="ventas-total-etiqueta">Total</span>
+            <span className="ventas-total-monto">{formatoPesos.format(total)}</span>
+          </div>
         </div>
       </div>
     </section>

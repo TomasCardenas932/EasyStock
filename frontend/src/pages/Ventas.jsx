@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { listarProductos } from '../api/productos.js'
-import { formatoPesos } from './entidades.js'
+import AgregarArticulo from '../components/ventas/AgregarArticulo.jsx'
+import { formatoPesos, formatoPrecio } from './entidades.js'
 import './Catalogo.css'
 import './Ventas.css'
-
-const formatoPrecio = (precio) => (precio == null ? '-' : formatoPesos.format(precio))
 
 // Listado de consulta para el mostrador: solo lo que hace falta para vender.
 function Ventas() {
@@ -15,7 +14,8 @@ function Ventas() {
   const [busquedaAplicada, setBusquedaAplicada] = useState('')
   const [seleccionadoId, setSeleccionadoId] = useState(null)
   const [agregados, setAgregados] = useState([])
-  const proximaClave = useRef(0)
+  // Articulo que espera confirmacion y cantidad antes de sumarse a la venta.
+  const [porAgregar, setPorAgregar] = useState(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -43,35 +43,48 @@ function Ventas() {
     return () => clearTimeout(timer)
   }, [busqueda])
 
-  // Solo cuenta como seleccionado si esta a la vista: si la busqueda lo oculto,
-  // Enter no agrega algo que el usuario no ve resaltado.
+  // Solo cuenta como seleccionado si esta a la vista
   const seleccionado = articulos.find((articulo) => articulo.id === seleccionadoId)
 
-  // Enter pasa el articulo resaltado a la lista de agregados. Se escucha en todo
-  // el documento para que funcione aunque el foco no este sobre la fila, salvo
-  // en campos y botones, donde Enter ya tiene su propio uso.
+  // Enter abre la confirmacion para el articulo resaltado.
   useEffect(() => {
     function handleEnter(e) {
-      if (e.key !== 'Enter' || e.repeat || !seleccionado) return
+      if (e.key !== 'Enter' || e.repeat || !seleccionado || porAgregar) return
       if (e.target.closest('input, textarea, select, button, a')) return
 
       e.preventDefault()
-      const clave = proximaClave.current++
-      setAgregados((actuales) => [
-        ...actuales,
-        {
-          clave,
-          codigo: seleccionado.codigo,
-          nombre: seleccionado.nombre,
-          precioPublico: seleccionado.precioPublico,
-        },
-      ])
-      setSeleccionadoId(null)
+      setPorAgregar(seleccionado)
     }
 
     document.addEventListener('keydown', handleEnter)
     return () => document.removeEventListener('keydown', handleEnter)
-  }, [seleccionado])
+  }, [seleccionado, porAgregar])
+
+  // Si el articulo ya estaba en la venta se suma la cantidad a su fila en vez
+  // de repetirlo.
+  function confirmarAgregado(cantidad) {
+    const articulo = porAgregar
+    setAgregados((actuales) =>
+      actuales.some((agregado) => agregado.id === articulo.id)
+        ? actuales.map((agregado) =>
+            agregado.id === articulo.id
+              ? { ...agregado, cantidad: agregado.cantidad + cantidad }
+              : agregado,
+          )
+        : [
+            ...actuales,
+            {
+              id: articulo.id,
+              codigo: articulo.codigo,
+              nombre: articulo.nombre,
+              precioPublico: articulo.precioPublico,
+              cantidad,
+            },
+          ],
+    )
+    setPorAgregar(null)
+    setSeleccionadoId(null)
+  }
 
   // Un click marca el articulo; otro click sobre el mismo lo desmarca.
   function alternarSeleccion(id) {
@@ -87,7 +100,10 @@ function Ventas() {
 
   const buscando = busquedaAplicada.trim() !== ''
   // Un articulo sin precio publico no suma.
-  const total = agregados.reduce((suma, agregado) => suma + (agregado.precioPublico ?? 0), 0)
+  const total = agregados.reduce(
+    (suma, agregado) => suma + (agregado.precioPublico ?? 0) * agregado.cantidad,
+    0,
+  )
 
   return (
     <section className="ventas">
@@ -172,14 +188,18 @@ function Ventas() {
                 <tr>
                   <th>Codigo</th>
                   <th>Nombre</th>
+                  <th className="num">Cant.</th>
                   <th className="num">Precio</th>
                 </tr>
               </thead>
               <tbody>
                 {agregados.map((agregado) => (
-                  <tr key={agregado.clave}>
+                  <tr key={agregado.id}>
                     <td className="mono">{agregado.codigo}</td>
-                    <td className="ventas-nombre">{agregado.nombre}</td>
+                    <td className="ventas-nombre" title={agregado.nombre}>
+                      {agregado.nombre}
+                    </td>
+                    <td className="num">{agregado.cantidad}</td>
                     <td className="num">{formatoPrecio(agregado.precioPublico)}</td>
                   </tr>
                 ))}
@@ -198,6 +218,14 @@ function Ventas() {
           </div>
         </div>
       </div>
+
+      {porAgregar && (
+        <AgregarArticulo
+          articulo={porAgregar}
+          onClose={() => setPorAgregar(null)}
+          onConfirmar={confirmarAgregado}
+        />
+      )}
     </section>
   )
 }

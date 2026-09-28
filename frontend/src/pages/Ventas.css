@@ -140,6 +140,16 @@
   padding: 8px 10px;
 }
 
+/* El nombre toma el ancho que sobra y se corta con "..." para que codigo,
+   cantidad y precio siempre se vean. El nombre completo queda en el title. */
+.ventas-agregados .ventas-nombre {
+  width: 100%;
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* En pantallas angostas no entran dos columnas: buscador y agregados pasan
    arriba. */
 @media (max-width: 768px) {

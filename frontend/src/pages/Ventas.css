@@ -4,12 +4,60 @@
   gap: 24px;
 }
 
-.ventas-listado {
+/* Columna izquierda: listado de articulos y, debajo, el boton para registrar
+   la venta. */
+.ventas-principal {
   flex: 0 0 60%;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.ventas-listado {
+  display: flex;
+  flex-direction: column;
   max-height: calc((100vh - var(--topbar-height)) * 0.75);
+}
+
+.ventas-registrar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ventas-registrar-boton {
+  gap: 10px;
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+/* El PNG es negro sobre transparente: se invierte para que se vea blanco
+   sobre el fondo negro del boton. */
+.ventas-registrar-icono {
+  width: 22px;
+  height: 22px;
+  filter: invert(1);
+}
+
+/* El mensaje toma el ancho que deja el boton, para no empujarlo a otra fila. */
+.ventas-registrar-resultado {
+  flex: 1 1 200px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-0);
+  background: var(--gray-900);
+  border-radius: 6px;
+}
+
+.ventas-registrar-resultado.is-error {
+  color: var(--gray-900);
+  background: var(--gray-100);
+  border-left: 4px solid var(--gray-1000);
+  border-radius: 0;
 }
 
 /* Comun a las dos tablas: si no entran, scrollean dentro de su caja. */
@@ -158,7 +206,7 @@
     align-items: stretch;
   }
 
-  .ventas-listado {
+  .ventas-principal {
     flex-basis: auto;
   }
 

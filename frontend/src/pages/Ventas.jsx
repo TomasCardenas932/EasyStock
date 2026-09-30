@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { listarProductos } from '../api/productos.js'
+import { registrarVenta } from '../api/ventas.js'
 import AgregarArticulo from '../components/ventas/AgregarArticulo.jsx'
+import iconoCarrito from '../media/carro-de-la-compra.png'
 import { formatoPesos, formatoPrecio } from './entidades.js'
 import './Catalogo.css'
 import './Ventas.css'
@@ -16,6 +18,9 @@ function Ventas() {
   const [agregados, setAgregados] = useState([])
   // Articulo que espera confirmacion y cantidad antes de sumarse a la venta.
   const [porAgregar, setPorAgregar] = useState(null)
+  const [registrando, setRegistrando] = useState(false)
+  // Resultado del ultimo intento de registrar la venta: { tipo, texto }.
+  const [resultado, setResultado] = useState(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -84,6 +89,34 @@ function Ventas() {
     )
     setPorAgregar(null)
     setSeleccionadoId(null)
+    setResultado(null)
+  }
+
+  // El aviso de exito se va solo; un error queda a la vista hasta el proximo
+  // cambio en la venta.
+  useEffect(() => {
+    if (resultado?.tipo !== 'exito') return
+    const timer = setTimeout(() => setResultado(null), 4000)
+    return () => clearTimeout(timer)
+  }, [resultado])
+
+  async function handleRegistrar() {
+    setRegistrando(true)
+    setResultado(null)
+    try {
+      const venta = await registrarVenta(
+        agregados.map((agregado) => ({ productoId: agregado.id, cantidad: agregado.cantidad })),
+      )
+      setAgregados([])
+      setResultado({
+        tipo: 'exito',
+        texto: `Venta #${venta.id} registrada por ${formatoPesos.format(venta.total)}`,
+      })
+    } catch (err) {
+      setResultado({ tipo: 'error', texto: err.message })
+    } finally {
+      setRegistrando(false)
+    }
   }
 
   // Un click marca el articulo; otro click sobre el mismo lo desmarca.
@@ -107,48 +140,70 @@ function Ventas() {
 
   return (
     <section className="ventas">
-      <div className="ventas-listado">
-        {cargando && <p className="catalogo-estado">Cargando articulos...</p>}
+      <div className="ventas-principal">
+        <div className="ventas-listado">
+          {cargando && <p className="catalogo-estado">Cargando articulos...</p>}
 
-        {error && <p className="catalogo-estado is-error">{error}</p>}
+          {error && <p className="catalogo-estado is-error">{error}</p>}
 
-        {!cargando && !error && articulos.length === 0 && (
-          <p className="catalogo-estado">
-            {buscando
-              ? `Ningun articulo coincide con "${busquedaAplicada}".`
-              : 'No hay articulos cargados.'}
-          </p>
-        )}
+          {!cargando && !error && articulos.length === 0 && (
+            <p className="catalogo-estado">
+              {buscando
+                ? `Ningun articulo coincide con "${busquedaAplicada}".`
+                : 'No hay articulos cargados.'}
+            </p>
+          )}
 
-        {!cargando && !error && articulos.length > 0 && (
-          <div className="tabla-contenedor ventas-tabla ventas-lista">
-            <table className="tabla">
-              <thead>
-                <tr>
-                  <th>Codigo</th>
-                  <th>Nombre</th>
-                  <th className="num">Precio publico</th>
-                </tr>
-              </thead>
-              <tbody>
-                {articulos.map((articulo) => (
-                  <tr
-                    key={articulo.id}
-                    className={articulo.id === seleccionadoId ? 'is-seleccionado' : undefined}
-                    tabIndex={0}
-                    aria-selected={articulo.id === seleccionadoId}
-                    onClick={() => alternarSeleccion(articulo.id)}
-                    onKeyDown={(e) => handleTeclaFila(e, articulo.id)}
-                  >
-                    <td className="mono">{articulo.codigo}</td>
-                    <td className="ventas-nombre">{articulo.nombre}</td>
-                    <td className="num">{formatoPrecio(articulo.precioPublico)}</td>
+          {!cargando && !error && articulos.length > 0 && (
+            <div className="tabla-contenedor ventas-tabla ventas-lista">
+              <table className="tabla">
+                <thead>
+                  <tr>
+                    <th>Codigo</th>
+                    <th>Nombre</th>
+                    <th className="num">Precio publico</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {articulos.map((articulo) => (
+                    <tr
+                      key={articulo.id}
+                      className={articulo.id === seleccionadoId ? 'is-seleccionado' : undefined}
+                      tabIndex={0}
+                      aria-selected={articulo.id === seleccionadoId}
+                      onClick={() => alternarSeleccion(articulo.id)}
+                      onKeyDown={(e) => handleTeclaFila(e, articulo.id)}
+                    >
+                      <td className="mono">{articulo.codigo}</td>
+                      <td className="ventas-nombre">{articulo.nombre}</td>
+                      <td className="num">{formatoPrecio(articulo.precioPublico)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="ventas-registrar">
+          {resultado && (
+            <p
+              className={`ventas-registrar-resultado${resultado.tipo === 'error' ? ' is-error' : ''}`}
+              role={resultado.tipo === 'error' ? 'alert' : 'status'}
+            >
+              {resultado.texto}
+            </p>
+          )}
+          <button
+            type="button"
+            className="btn btn-primario ventas-registrar-boton"
+            onClick={handleRegistrar}
+            disabled={agregados.length === 0 || registrando}
+          >
+            <img src={iconoCarrito} alt="" className="ventas-registrar-icono" />
+            {registrando ? 'Registrando...' : 'Registrar venta'}
+          </button>
+        </div>
       </div>
 
       <div className="ventas-lateral">

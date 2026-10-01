@@ -1,0 +1,218 @@
+.ventas {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+/* Columna izquierda: listado de articulos y, debajo, el boton para registrar
+   la venta. */
+.ventas-principal {
+  flex: 0 0 60%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ventas-listado {
+  display: flex;
+  flex-direction: column;
+  max-height: calc((100vh - var(--topbar-height)) * 0.75);
+}
+
+.ventas-registrar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.ventas-registrar-boton {
+  gap: 10px;
+  padding: 12px 22px;
+  font-size: 15px;
+}
+
+/* El PNG es negro sobre transparente: se invierte para que se vea blanco
+   sobre el fondo negro del boton. */
+.ventas-registrar-icono {
+  width: 22px;
+  height: 22px;
+  filter: invert(1);
+}
+
+/* El mensaje toma el ancho que deja el boton, para no empujarlo a otra fila. */
+.ventas-registrar-resultado {
+  flex: 1 1 200px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-0);
+  background: var(--gray-900);
+  border-radius: 6px;
+}
+
+.ventas-registrar-resultado.is-error {
+  color: var(--gray-900);
+  background: var(--gray-100);
+  border-left: 4px solid var(--gray-1000);
+  border-radius: 0;
+}
+
+/* Comun a las dos tablas: si no entran, scrollean dentro de su caja. */
+.ventas-tabla {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Sticky en el thead y no en cada th: con celdas sueltas el navegador deja
+   lineas finas entre columnas cuando la pantalla tiene zoom. */
+.ventas-tabla thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Las columnas son angostas: los nombres largos bajan de linea en vez de
+   forzar scroll horizontal. */
+.ventas-tabla .ventas-nombre {
+  white-space: normal;
+}
+
+.ventas-lista tbody tr {
+  cursor: pointer;
+}
+
+.ventas-lista tbody tr:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: -2px;
+}
+
+/* Fila elegida: fondo marcado y barra a la izquierda, como el item activo de
+   la sidebar. */
+.ventas-lista tbody tr.is-seleccionado td {
+  background: var(--gray-200);
+  color: var(--gray-1000);
+  font-weight: 600;
+}
+
+.ventas-lista tbody tr.is-seleccionado td:first-child {
+  box-shadow: inset 3px 0 0 var(--gray-1000);
+}
+
+/* Columna derecha: buscador arriba y articulos agregados debajo. Ocupa el
+   ancho que deja libre el listado. */
+.ventas-lateral {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: calc((100vh - var(--topbar-height)) * 0.75);
+}
+
+.ventas-titulo {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.ventas-buscador {
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.ventas-buscador .catalogo-buscador {
+  margin-bottom: 0;
+}
+
+.ventas-buscador .catalogo-buscador input {
+  min-width: 0;
+  max-width: none;
+}
+
+/* Ocupa todo el alto que deja el buscador: la tabla se estira y el total
+   queda siempre al fondo de la columna. */
+.ventas-agregados {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ventas-agregados-vacio {
+  padding: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.ventas-total {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: var(--gray-1000);
+  color: var(--gray-0);
+  border-radius: 6px;
+}
+
+.ventas-total-etiqueta {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.ventas-total-monto {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* La columna derecha es angosta: celdas mas compactas para que las tres
+   columnas entren sin scroll horizontal. */
+.ventas-agregados .tabla {
+  font-size: 13px;
+}
+
+.ventas-agregados .tabla th,
+.ventas-agregados .tabla td {
+  padding: 8px 10px;
+}
+
+/* El nombre toma el ancho que sobra y se corta con "..." para que codigo,
+   cantidad y precio siempre se vean. El nombre completo queda en el title. */
+.ventas-agregados .ventas-nombre {
+  width: 100%;
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* En pantallas angostas no entran dos columnas: buscador y agregados pasan
+   arriba. */
+@media (max-width: 768px) {
+  .ventas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ventas-principal {
+    flex-basis: auto;
+  }
+
+  .ventas-lateral {
+    order: -1;
+    height: auto;
+    max-height: calc((100vh - var(--topbar-height)) * 0.75);
+  }
+}

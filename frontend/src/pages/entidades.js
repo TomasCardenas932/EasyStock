@@ -7,11 +7,14 @@ import BajaProveedor from '../components/proveedores/BajaProveedor.jsx'
 import { listarProductos } from '../api/productos.js'
 import { listarProveedores } from '../api/proveedores.js'
 
-const formatoPesos = new Intl.NumberFormat('es-AR', {
+export const formatoPesos = new Intl.NumberFormat('es-AR', {
   style: 'currency',
   currency: 'ARS',
   maximumFractionDigits: 0,
 })
+
+// El precio publico es opcional: sin precio se muestra un guion.
+export const formatoPrecio = (precio) => (precio == null ? '-' : formatoPesos.format(precio))
 
 // Cada entidad describe como listarla, que columnas muestra y que modales abren
 // los botones de ABM. La pagina es la misma para todas: alcanza con agregar una
@@ -36,7 +39,7 @@ const ENTIDADES = [
       {
         titulo: 'Precio publico',
         clase: 'num',
-        valor: (a) => (a.precioPublico == null ? '-' : formatoPesos.format(a.precioPublico)),
+        valor: (a) => formatoPrecio(a.precioPublico),
       },
       { titulo: 'Proveedor', valor: (a) => a.proveedor?.nombre ?? '-' },
     ],

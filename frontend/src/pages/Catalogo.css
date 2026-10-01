@@ -1,3 +1,26 @@
+/* La pantalla ocupa justo el alto visible (sin el topbar ni los 32px de padding
+   arriba y abajo de app-content): el listado toma lo que sobra y scrollea
+   dentro de su caja, asi conmutador, botones y buscador quedan siempre a la
+   vista. */
+.catalogo {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height) - 64px);
+}
+
+.catalogo-tabla {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Sticky en el thead y no en cada th: con celdas sueltas el navegador deja
+   lineas finas entre columnas cuando la pantalla tiene zoom. */
+.catalogo-tabla thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .catalogo-header {
   display: flex;
   align-items: flex-end;
@@ -146,6 +169,7 @@
    son los mismos, solo cambia la entidad que se esta viendo. */
 .catalogo-conmutador {
   display: inline-flex;
+  align-self: flex-start;
   margin-bottom: 20px;
   padding: 4px;
   gap: 4px;
@@ -181,4 +205,16 @@
 .catalogo-conmutador-opcion:focus-visible {
   outline: 2px solid var(--gray-1000);
   outline-offset: 2px;
+}
+
+/* En pantallas angostas la sidebar queda arriba del contenido y el alto fijo
+   no cierra: la pagina vuelve a crecer y solo el listado tiene tope. */
+@media (max-width: 768px) {
+  .catalogo {
+    height: auto;
+  }
+
+  .catalogo-tabla {
+    max-height: calc((100vh - var(--topbar-height)) * 0.75);
+  }
 }

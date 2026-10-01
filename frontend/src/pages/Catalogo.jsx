@@ -164,7 +164,7 @@ function Catalogo() {
       )}
 
       {!cargando && !error && !sinRegistros && (
-        <div className="tabla-contenedor">
+        <div className="tabla-contenedor catalogo-tabla">
           <table className="tabla">
             <thead>
               <tr>

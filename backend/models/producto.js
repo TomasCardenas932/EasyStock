@@ -65,6 +65,14 @@ module.exports = (sequelize, DataTypes) => {
         field: 'precio_publico',
         validate: enteroNoNegativo('El precio publico'),
       },
+      umbralMinimo: {
+        // Opcional: con el stock en este valor o por debajo, el articulo tiene
+        // que reponerse. Sin umbral no genera avisos (BRD v1.3, AR-8).
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'umbral_minimo',
+        validate: enteroNoNegativo('El umbral minimo'),
+      },
       proveedorId: {
         // Clave foranea contra `proveedores`. La asociacion expone el objeto
         // completo bajo `proveedor`.

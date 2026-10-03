@@ -6,7 +6,15 @@ const { Producto, Proveedor } = require('../../models');
 
 const router = Router();
 
-const CAMPOS_EDITABLES = ['codigo', 'nombre', 'stock', 'costo', 'precioPublico', 'proveedorId'];
+const CAMPOS_EDITABLES = [
+  'codigo',
+  'nombre',
+  'stock',
+  'costo',
+  'precioPublico',
+  'umbralMinimo',
+  'proveedorId',
+];
 
 // El proveedor viaja como objeto anidado: la tabla del ABM muestra el nombre.
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };

@@ -19,6 +19,15 @@ const CAMPOS = [
     span: 2,
   },
   { name: 'proveedorId', label: 'Proveedor', seleccion: true, opcional: true, span: 2 },
+  // Opcional: sin umbral el articulo no genera avisos de reposicion (BRD v1.3, AR-8).
+  {
+    name: 'umbralMinimo',
+    label: 'Umbral minimo',
+    placeholder: 'Ej: 5',
+    numerico: true,
+    opcional: true,
+    span: 2,
+  },
 ]
 
 const ENTERO_NO_NEGATIVO = /^\d+$/
@@ -50,6 +59,7 @@ function aDatos(valores) {
     costo: Number(valores.costo),
     // Vacio viaja como null: Number('') daria 0 y guardaria un precio de $0.
     precioPublico: valores.precioPublico.trim() === '' ? null : Number(valores.precioPublico),
+    umbralMinimo: valores.umbralMinimo.trim() === '' ? null : Number(valores.umbralMinimo),
     proveedorId: valores.proveedorId === '' ? null : Number(valores.proveedorId),
   }
 }

@@ -1,5 +1,3 @@
-'use strict';
-
 const { Router } = require('express');
 
 const {
@@ -10,21 +8,29 @@ const {
   bajaProducto,
 } = require('../controllers/productosController');
 
+const { validarBusqueda } = require('../middlewares/validar');
+const {
+  validarCodigo,
+  validarAlta,
+  validarModificacion,
+  cargarProducto,
+} = require('../middlewares/productosMiddleware');
+
 const router = Router();
 
 // GET /api/productos?buscar=texto -> lista de articulos, filtrada por codigo o nombre
-router.get('/', obtenerProductos);
+router.get('/', validarBusqueda, obtenerProductos);
 
 // GET /api/productos/:codigo -> un articulo
-router.get('/:codigo', obtenerProdCodigo);
+router.get('/:codigo', validarCodigo, cargarProducto, obtenerProdCodigo);
 
 // POST /api/productos -> alta
-router.post('/', crearProducto);
+router.post('/', validarAlta, crearProducto);
 
 // PUT /api/productos/:codigo -> modificacion
-router.put('/:codigo', modificarProducto);
+router.put('/:codigo', validarCodigo, validarModificacion, cargarProducto, modificarProducto);
 
 // DELETE /api/productos/:codigo -> baja
-router.delete('/:codigo', bajaProducto);
+router.delete('/:codigo', validarCodigo, cargarProducto, bajaProducto);
 
 module.exports = router;

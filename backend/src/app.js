@@ -1,10 +1,9 @@
-'use strict';
-
 const express = require('express');
 const { ForeignKeyConstraintError, ValidationError, UniqueConstraintError } = require('sequelize');
 const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const ventasRouter = require('./routes/ventas');
+const ErrorHttp = require('./Excepciones/ErrorHttp');
 
 const app = express();
 
@@ -19,6 +18,11 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  // Verificacion que fallo en un middleware: ya trae status y mensaje.
+  if (err instanceof ErrorHttp) {
+    return res.status(err.status).json({ error: err.message, ...err.extra });
+  }
+
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'El cuerpo de la solicitud no es JSON valido' });
   }

@@ -1,5 +1,3 @@
-'use strict';
-
 const { Model } = require('sequelize');
 
 const INDICE_UNICO = 'proveedores_nombre_unico';

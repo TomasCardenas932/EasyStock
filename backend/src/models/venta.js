@@ -1,5 +1,3 @@
-'use strict';
-
 const { Model } = require('sequelize');
 
 const esEntero = (valor, minimo) => Number.isInteger(valor) && valor >= minimo;

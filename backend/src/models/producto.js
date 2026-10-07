@@ -1,5 +1,3 @@
-'use strict';
-
 const { Model } = require('sequelize');
 
 const INDICE_UNICO = 'productos_codigo_proveedor';
@@ -19,8 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   Producto.init(
     {
       codigo: {
-        // Cada proveedor tiene su propia codificacion: el codigo es unico
-        // dentro de un proveedor, no en toda la tabla (BRD v1.2, regla 8).
         type: DataTypes.STRING,
         allowNull: false,
         unique: {
@@ -58,16 +54,12 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       precioPublico: {
-        // Opcional: al importar un catalogo se cargan codigo y costo, y el
-        // precio se asigna despues (BRD v1.2, regla 2).
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'precio_publico',
         validate: enteroNoNegativo('El precio publico'),
       },
       umbralMinimo: {
-        // Opcional: con el stock en este valor o por debajo, el articulo tiene
-        // que reponerse. Sin umbral no genera avisos (BRD v1.3, AR-8).
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'umbral_minimo',

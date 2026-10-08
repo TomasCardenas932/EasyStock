@@ -30,8 +30,23 @@ module.exports = (sequelize, DataTypes) => {
       // Sin tableName explicito Sequelize pluralizaria en ingles ("Proveedors").
       tableName: 'proveedores',
       underscored: true,
+      // Cada alta, modificacion o baja queda en el registro de movimientos,
+      // con la transaccion de la operacion. Una baja frenada por la clave
+      // foranea falla antes de llegar al hook y no registra nada.
+      hooks: {
+        afterCreate: (proveedor, opciones) => registrar('alta', proveedor, opciones),
+        afterUpdate: (proveedor, opciones) => registrar('modificacion', proveedor, opciones),
+        afterDestroy: (proveedor, opciones) => registrar('baja', proveedor, opciones),
+      },
     }
   );
+
+  function registrar(tipo, proveedor, { transaction }) {
+    return sequelize.models.Movimiento.registrar(
+      { tipo, entidad: 'proveedor', detalle: proveedor.nombre },
+      { transaction }
+    );
+  }
 
   return Proveedor;
 };

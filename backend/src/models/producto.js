@@ -80,8 +80,30 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'Producto',
       tableName: 'productos',
       underscored: true,
+      // Cada alta, modificacion o baja queda en el registro de movimientos.
+      // Se guarda con la transaccion de la operacion: si una falla, no queda
+      // ninguna de las dos. El descuento de stock de una venta no pasa por
+      // aca (decrement no corre hooks): lo registra la venta.
+      // La cantidad es el stock que suma o resta cada operacion: el inicial en
+      // el alta, la diferencia en la modificacion (previous todavia tiene el
+      // valor anterior) y el que quedaba en la baja.
+      hooks: {
+        afterCreate: (producto, opciones) =>
+          registrar('alta', producto, producto.stock, opciones),
+        afterUpdate: (producto, opciones) =>
+          registrar('modificacion', producto, producto.stock - producto.previous('stock'), opciones),
+        afterDestroy: (producto, opciones) =>
+          registrar('baja', producto, -producto.stock, opciones),
+      },
     }
   );
+
+  function registrar(tipo, producto, cantidad, { transaction }) {
+    return sequelize.models.Movimiento.registrar(
+      { tipo, entidad: 'producto', detalle: `${producto.codigo} - ${producto.nombre}`, cantidad },
+      { transaction }
+    );
+  }
 
   return Producto;
 };

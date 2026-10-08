@@ -1,4 +1,4 @@
-const {Proveedor} = require("../models")
+const { sequelize, Proveedor } = require("../models")
 const { literal } = require('sequelize');
 
 // Las verificaciones corren antes, en middlewares/proveedoresMiddleware.js:
@@ -43,18 +43,23 @@ const obtenerProvNombre = async (req, res) => {
   res.json(await req.proveedor.reload({ attributes: ATRIBUTOS }));
 }
 
+// Alta, modificacion y baja van en una transaccion: el hook del modelo
+// registra el movimiento dentro de ella, asi la operacion y su movimiento se
+// guardan juntos o no se guarda ninguno.
 const crearProveedor = async (req, res) => {
-  const proveedor = await Proveedor.create(req.body);
+  const proveedor = await sequelize.transaction((transaction) =>
+    Proveedor.create(req.body, { transaction })
+  );
   res.status(201).json(await proveedor.reload({ attributes: ATRIBUTOS }));
 }
 
 const modificarProveedor = async (req, res) => {
-  await req.proveedor.update(req.body);
+  await sequelize.transaction((transaction) => req.proveedor.update(req.body, { transaction }));
   res.json(await req.proveedor.reload({ attributes: ATRIBUTOS }));
 }
 
 const bajaProveedor = async (req, res) => {
-  await req.proveedor.destroy();
+  await sequelize.transaction((transaction) => req.proveedor.destroy({ transaction }));
   res.status(204).end();
 }
 

@@ -3,6 +3,7 @@ const { ForeignKeyConstraintError, ValidationError, UniqueConstraintError } = re
 const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const ventasRouter = require('./routes/ventas');
+const movimientosRouter = require('./routes/movimientos');
 const ErrorHttp = require('./Excepciones/ErrorHttp');
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use('/api/productos', productosRouter);
 app.use('/api/proveedores', proveedoresRouter);
 app.use('/api/ventas', ventasRouter);
+app.use('/api/movimientos', movimientosRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });

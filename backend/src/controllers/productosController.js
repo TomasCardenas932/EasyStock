@@ -1,5 +1,5 @@
 const { literal } = require('sequelize');
-const { Producto, Proveedor } = require('../models');
+const { sequelize, Producto, Proveedor } = require('../models');
 
 // El proveedor viaja como objeto anidado: la tabla del ABM muestra el nombre.
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };
@@ -32,18 +32,23 @@ const obtenerProdCodigo = async (req, res) => {
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
+// Alta, modificacion y baja van en una transaccion: el hook del modelo
+// registra el movimiento dentro de ella, asi la operacion y su movimiento se
+// guardan juntos o no se guarda ninguno.
 const crearProducto = async (req, res) => {
-  const producto = await Producto.create(req.body);
+  const producto = await sequelize.transaction((transaction) =>
+    Producto.create(req.body, { transaction })
+  );
   res.status(201).json(await producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const modificarProducto = async (req, res) => {
-  await req.producto.update(req.body);
+  await sequelize.transaction((transaction) => req.producto.update(req.body, { transaction }));
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const bajaProducto = async (req, res) => {
-  await req.producto.destroy();
+  await sequelize.transaction((transaction) => req.producto.destroy({ transaction }));
   res.status(204).end();
 };
 

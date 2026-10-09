@@ -11,9 +11,7 @@ const patronBusqueda = (texto) => {
   return `%${escapado}%`;
 };
 
-// Las columnas van calificadas con el alias del modelo: el JOIN con proveedores
-// trae otra columna `nombre` y sin calificar SQLite la rechaza por ambigua.
-// Sin texto buscado el patron queda '%%' y trae todos los articulos.
+//el JOIN con proveedores trae otra columna `nombre` y sin calificar SQLite la rechaza por ambigua.
 const FILTRO_BUSQUEDA =
   "(`Producto`.`codigo` LIKE :patron ESCAPE '!' OR `Producto`.`nombre` LIKE :patron ESCAPE '!')";
 
@@ -32,9 +30,6 @@ const obtenerProdCodigo = async (req, res) => {
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
-// Alta, modificacion y baja van en una transaccion: el hook del modelo
-// registra el movimiento dentro de ella, asi la operacion y su movimiento se
-// guardan juntos o no se guarda ninguno.
 const crearProducto = async (req, res) => {
   const producto = await sequelize.transaction((transaction) =>
     Producto.create(req.body, { transaction })

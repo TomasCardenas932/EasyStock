@@ -36,9 +36,7 @@ const validarAlta = validar({ body: esquemaAlta });
 
 const validarModificacion = validar({ body: esquemaModificacion });
 
-// Busca el articulo de :codigo y lo deja en req.producto. El codigo solo es
-// unico dentro de un proveedor: si dos proveedores usan el mismo, la operacion
-// se frena en vez de elegir un articulo al azar.
+// Busca el articulo de :codigo y lo deja en req.producto.
 const cargarProducto = async (req, res, next) => {
   const { codigo } = req.params;
   const productos = await Producto.findAll({

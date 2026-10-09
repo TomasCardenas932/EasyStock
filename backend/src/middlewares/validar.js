@@ -24,10 +24,6 @@ const OPCIONES = {
   errors: { wrap: { label: false } },
 };
 
-// Arma un middleware que valida las partes del request indicadas
-// ({ params, query, body }). Si algo no cumple el esquema corta con un 400 y
-// un detalle por campo. Si cumple, deja en el request los valores ya
-// convertidos: textos recortados, numeros como number, sin campos de mas.
 const validar = (esquemas) => (req, res, next) => {
   for (const [parte, esquema] of Object.entries(esquemas)) {
     const { error, value } = esquema.validate(req[parte] ?? {}, OPCIONES);
@@ -38,8 +34,7 @@ const validar = (esquemas) => (req, res, next) => {
       }));
       throw new ErrorHttp(400, detalles[0].mensaje, { detalles });
     }
-    // En Express 5 req.query es un getter de solo lectura: la propiedad se
-    // redefine en vez de asignarla.
+    
     Object.defineProperty(req, parte, {
       value,
       writable: true,
@@ -50,7 +45,6 @@ const validar = (esquemas) => (req, res, next) => {
   next();
 };
 
-// GET /?buscar=texto de los listados. Sin texto queda '' y el listado trae todo.
 const validarBusqueda = validar({
   query: Joi.object({ buscar: Joi.string().trim().allow('').default('').label('La busqueda') }),
 });

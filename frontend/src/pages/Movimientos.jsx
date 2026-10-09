@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { listarMovimientos } from '../api/movimientos.js'
 import './Catalogo.css'
 
-// 07/10/2026, 15:37:21
+
 const formatoFecha = new Intl.DateTimeFormat('es-AR', {
   day: '2-digit',
   month: '2-digit',
@@ -30,17 +30,23 @@ function Movimientos() {
   const [movimientos, setMovimientos] = useState([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
+  const [busqueda, setBusqueda] = useState('')
+  const [busquedaAplicada, setBusquedaAplicada] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
 
     async function cargarMovimientos() {
       try {
-        setMovimientos(await listarMovimientos({ signal: controller.signal }))
+        setMovimientos(await listarMovimientos(busquedaAplicada, { signal: controller.signal }))
         setError(null)
       } catch (err) {
         if (err.name !== 'AbortError') {
-          setError('No se pudieron cargar los movimientos. Verifica que el backend este corriendo.')
+          setError(
+            err.status === 400
+              ? err.message
+              : 'No se pudieron cargar los movimientos. Verifica que el backend este corriendo.',
+          )
         }
       } finally {
         if (!controller.signal.aborted) setCargando(false)
@@ -49,23 +55,64 @@ function Movimientos() {
 
     cargarMovimientos()
     return () => controller.abort()
-  }, [])
+  }, [busquedaAplicada])
+
+  // Espera a que el usuario deje de escribir antes de consultar al backend.
+  useEffect(() => {
+    const timer = setTimeout(() => setBusquedaAplicada(busqueda), 300)
+    return () => clearTimeout(timer)
+  }, [busqueda])
+
+  const buscando = busquedaAplicada.trim() !== ''
 
   return (
     <section className="catalogo">
       <header className="catalogo-header">
         <div>
           <h1>Movimientos</h1>
-          {!cargando && !error && <p>{movimientos.length} movimientos registrados</p>}
+          {!cargando && !error && (
+            <p>
+              {buscando
+                ? `${movimientos.length} movimientos encontrados`
+                : `${movimientos.length} movimientos registrados`}
+            </p>
+          )}
         </div>
       </header>
+
+      <div className="catalogo-buscador">
+        <label className="sr-only" htmlFor="buscador-movimientos">
+          Buscar movimientos
+        </label>
+        <input
+          id="buscador-movimientos"
+          type="search"
+          autoComplete="off"
+          placeholder="Buscar por fecha (dd/mm/aaaa) o identificador (#302)"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        {busqueda && (
+          <button
+            type="button"
+            className="catalogo-buscador-limpiar"
+            onClick={() => setBusqueda('')}
+          >
+            Limpiar
+          </button>
+        )}
+      </div>
 
       {cargando && <p className="catalogo-estado">Cargando movimientos...</p>}
 
       {error && <p className="catalogo-estado is-error">{error}</p>}
 
       {!cargando && !error && movimientos.length === 0 && (
-        <p className="catalogo-estado">Todavia no hay movimientos registrados.</p>
+        <p className="catalogo-estado">
+          {buscando
+            ? `Ningun movimiento coincide con "${busquedaAplicada}".`
+            : 'Todavia no hay movimientos registrados.'}
+        </p>
       )}
 
       {!cargando && !error && movimientos.length > 0 && (

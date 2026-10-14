@@ -4,11 +4,7 @@ const { validar } = require('./validar');
 const SOLO_FECHA_O_IDENTIFICADOR =
   'Busca por fecha (dd/mm/aaaa) o por numero de identificador (#302)';
 
-// GET /?buscar=texto del registro de movimientos. Se busca solo por:
-// - numero de identificador: "#302" trae venta#302, alta#302, etc.
-// - fecha, completa o el principio: "07/10/2026", "07/10" o "07".
-// Sin texto (o con un "#" solo, mientras se escribe el numero) queda '' y el
-// listado trae todo.
+
 const validarBusqueda = validar({
   query: Joi.object({
     buscar: Joi.string()

@@ -18,9 +18,6 @@ const validarAlta = validar({ body: esquemaAlta });
 
 const validarModificacion = validar({ body: esquemaModificacion });
 
-// Busca el proveedor de :nombre y lo deja en req.proveedor. El nombre es unico
-// (indice `proveedores_nombre_unico`), asi que alcanza como clave de busqueda:
-// no hace falta desambiguar como en productos.
 const cargarProveedor = async (req, res, next) => {
   const { nombre } = req.params;
   const proveedor = await Proveedor.findOne({ where: { nombre } });

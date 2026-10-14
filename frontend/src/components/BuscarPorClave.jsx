@@ -1,8 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import './abm.css'
 
-// Primer paso de la modificacion y la baja: ubicar el registro por su clave
-// (el codigo en articulos, el nombre en proveedores).
+
 function BuscarPorClave({
   descripcion,
   etiqueta,

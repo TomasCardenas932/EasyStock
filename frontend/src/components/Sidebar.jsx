@@ -6,7 +6,7 @@ const SECTIONS = [
   { id: 'SC001', label: 'Dashboard', path: '/Dashboard' },
   { id: 'SC002', label: 'Articulos', path: '/articulos' },
   { id: 'SC003', label: 'Ventas', path: '/ventas' },
-  { id: 'SC004', label: 'Movimientos' },
+  { id: 'SC004', label: 'Movimientos', path: '/movimientos' },
   { id: 'SC005', label: 'Alertas' },
   { id: 'SC006', label: 'Informes' },
 ]

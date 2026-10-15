@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { validarBusqueda } = require('../middlewares/validar');
 
 const {
   obtenerProductos,
@@ -8,7 +9,6 @@ const {
   bajaProducto,
 } = require('../controllers/productosController');
 
-const { validarBusqueda } = require('../middlewares/validar');
 const {
   validarCodigo,
   validarAlta,

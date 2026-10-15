@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import ENTIDADES from './entidades.js'
 import './Catalogo.css'
 
-// Pantalla unica para las tablas del sistema: el conmutador elige la entidad y
-// los botones de ABM abren los modales que esa entidad declara en entidades.js.
+
 function Catalogo() {
   const [claveEntidad, setClaveEntidad] = useState(ENTIDADES[0].clave)
   const [registros, setRegistros] = useState([])

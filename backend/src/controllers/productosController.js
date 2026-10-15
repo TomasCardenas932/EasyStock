@@ -1,5 +1,5 @@
 const { literal } = require('sequelize');
-const { Producto, Proveedor } = require('../models');
+const { sequelize, Producto, Proveedor } = require('../models');
 
 // El proveedor viaja como objeto anidado: la tabla del ABM muestra el nombre.
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };
@@ -11,9 +11,7 @@ const patronBusqueda = (texto) => {
   return `%${escapado}%`;
 };
 
-// Las columnas van calificadas con el alias del modelo: el JOIN con proveedores
-// trae otra columna `nombre` y sin calificar SQLite la rechaza por ambigua.
-// Sin texto buscado el patron queda '%%' y trae todos los articulos.
+//el JOIN con proveedores trae otra columna `nombre` y sin calificar SQLite la rechaza por ambigua.
 const FILTRO_BUSQUEDA =
   "(`Producto`.`codigo` LIKE :patron ESCAPE '!' OR `Producto`.`nombre` LIKE :patron ESCAPE '!')";
 
@@ -33,17 +31,19 @@ const obtenerProdCodigo = async (req, res) => {
 };
 
 const crearProducto = async (req, res) => {
-  const producto = await Producto.create(req.body);
+  const producto = await sequelize.transaction((transaction) =>
+    Producto.create(req.body, { transaction })
+  );
   res.status(201).json(await producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const modificarProducto = async (req, res) => {
-  await req.producto.update(req.body);
+  await sequelize.transaction((transaction) => req.producto.update(req.body, { transaction }));
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const bajaProducto = async (req, res) => {
-  await req.producto.destroy();
+  await sequelize.transaction((transaction) => req.producto.destroy({ transaction }));
   res.status(204).end();
 };
 

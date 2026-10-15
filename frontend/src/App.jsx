@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Catalogo from './pages/Catalogo.jsx'
 import Ventas from './pages/Ventas.jsx'
+import Movimientos from './pages/Movimientos.jsx'
 import './App.css'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/articulos" element={<Catalogo />} />
             <Route path="/ventas" element={<Ventas />} />
+            <Route path="/movimientos" element={<Movimientos />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

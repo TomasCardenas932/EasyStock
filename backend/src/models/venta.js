@@ -90,6 +90,23 @@ module.exports = (sequelize, DataTypes) => {
         beforeCreate(venta) {
           venta.fecha = new Date();
         },
+        // Un movimiento por articulo vendido, dentro de la transaccion de la
+        // venta, con las unidades vendidas en negativo. Se guardan de a uno:
+        // cada identificador sale de contar los movimientos de venta que ya
+        // estan guardados.
+        async afterCreate(venta, { transaction }) {
+          for (const articulo of venta.articulos) {
+            await sequelize.models.Movimiento.registrar(
+              {
+                tipo: 'venta',
+                entidad: 'producto',
+                detalle: `${articulo.codigo} - ${articulo.nombre}`,
+                cantidad: -articulo.cantidad,
+              },
+              { transaction }
+            );
+          }
+        },
       },
     }
   );

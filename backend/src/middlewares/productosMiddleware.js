@@ -1,36 +1,10 @@
-const Joi = require('joi');
+const { Op } = require('sequelize');
 const { Producto } = require('../models');
 const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { validar } = require('./validar');
+const { esquemaCodigo, esquemaAlta, esquemaModificacion } = require('../schemas/productosSchema');
 
-const texto = (etiqueta) => Joi.string().trim().label(etiqueta);
-const enteroNoNegativo = (etiqueta) => Joi.number().integer().min(0).label(etiqueta);
-// Opcionales: null (o '') deja el campo vacio.
-const opcional = (etiqueta) => enteroNoNegativo(etiqueta).allow(null).empty('');
-
-const CAMPOS = {
-  codigo: texto('El codigo').required(),
-  nombre: texto('El nombre').required(),
-  // Sin stock, el modelo lo da de alta en 0.
-  stock: enteroNoNegativo('El stock'),
-  costo: enteroNoNegativo('El costo').required(),
-  // Se puede cargar solo el costo y fijar el precio despues (BRD v1.2, regla 2).
-  precioPublico: opcional('El precio publico'),
-  // Sin umbral el articulo no genera avisos de reposicion (BRD v1.3, AR-8).
-  umbralMinimo: opcional('El umbral minimo'),
-  proveedorId: opcional('El proveedor'),
-};
-
-const esquemaAlta = Joi.object(CAMPOS);
-
-// En la modificacion viajan solo los campos que cambian.
-const esquemaModificacion = esquemaAlta.fork(['codigo', 'nombre', 'costo'], (campo) =>
-  campo.optional()
-);
-
-const validarCodigo = validar({
-  params: Joi.object({ codigo: texto('El codigo').required() }),
-});
+const validarCodigo = validar({ params: esquemaCodigo });
 
 const validarAlta = validar({ body: esquemaAlta });
 
@@ -66,9 +40,34 @@ const cargarProducto = async (req, res, next) => {
   next();
 };
 
+// Un codigo solo se repite entre proveedores distintos, y no puede haber dos
+// productos sin proveedor con el mismo codigo. Los indices unicos de la base
+// lo frenan igual; aca se corta antes para que el mensaje diga cual de los dos
+// casos es. En la modificacion se compara con lo que queda despues del cambio
+// (lo que no viaja en el body se conserva) y se excluye al propio producto.
+const verificarCodigoLibre = async (req, res, next) => {
+  const actual = req.producto;
+  const { codigo = actual?.codigo, proveedorId = actual?.proveedorId ?? null } = req.body;
+
+  const repetido = await Producto.findOne({
+    where: { codigo, proveedorId, ...(actual && { id: { [Op.ne]: actual.id } }) },
+  });
+
+  if (repetido) {
+    const mensaje =
+      proveedorId === null
+        ? 'Ya existe un producto con ese codigo sin proveedor'
+        : 'Ya existe un producto con ese codigo para ese proveedor';
+    throw new ErrorHttp(409, mensaje, { detalles: [{ campo: 'codigo', mensaje }] });
+  }
+
+  next();
+};
+
 module.exports = {
   validarCodigo,
   validarAlta,
   validarModificacion,
   cargarProducto,
+  verificarCodigoLibre,
 };

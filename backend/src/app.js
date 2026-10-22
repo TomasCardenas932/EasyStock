@@ -4,6 +4,9 @@ const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const ventasRouter = require('./routes/ventas');
 const movimientosRouter = require('./routes/movimientos');
+const usuariosRouter = require('./routes/usuarios');
+const rolesRouter = require('./routes/roles');
+const permisosRouter = require('./routes/permisos');
 const ErrorHttp = require('./Excepciones/ErrorHttp');
 
 const app = express();
@@ -14,6 +17,9 @@ app.use('/api/productos', productosRouter);
 app.use('/api/proveedores', proveedoresRouter);
 app.use('/api/ventas', ventasRouter);
 app.use('/api/movimientos', movimientosRouter);
+app.use('/api/usuarios', usuariosRouter);
+app.use('/api/roles', rolesRouter);
+app.use('/api/permisos', permisosRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });

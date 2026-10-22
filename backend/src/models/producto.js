@@ -1,5 +1,8 @@
 const { Model } = require('sequelize');
 
+// Un codigo se repite solo entre proveedores distintos. Los productos sin
+// proveedor los cubre otro indice, parcial: productos_codigo_sin_proveedor
+// (ver la migracion 20261022130000).
 const INDICE_UNICO = 'productos_codigo_proveedor';
 
 const enteroNoNegativo = (campo) => ({

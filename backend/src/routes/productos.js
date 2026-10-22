@@ -14,6 +14,7 @@ const {
   validarAlta,
   validarModificacion,
   cargarProducto,
+  verificarCodigoLibre,
 } = require('../middlewares/productosMiddleware');
 
 const router = Router();
@@ -25,10 +26,17 @@ router.get('/', validarBusqueda, obtenerProductos);
 router.get('/:codigo', validarCodigo, cargarProducto, obtenerProdCodigo);
 
 // POST /api/productos -> alta
-router.post('/', validarAlta, crearProducto);
+router.post('/', validarAlta, verificarCodigoLibre, crearProducto);
 
 // PUT /api/productos/:codigo -> modificacion
-router.put('/:codigo', validarCodigo, validarModificacion, cargarProducto, modificarProducto);
+router.put(
+  '/:codigo',
+  validarCodigo,
+  validarModificacion,
+  cargarProducto,
+  verificarCodigoLibre,
+  modificarProducto
+);
 
 // DELETE /api/productos/:codigo -> baja
 router.delete('/:codigo', validarCodigo, cargarProducto, bajaProducto);

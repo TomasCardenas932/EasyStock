@@ -1,5 +1,7 @@
 const { Router } = require('express');
 const { validarBusqueda } = require('../middlewares/validar');
+const { requierePermiso } = require('../middlewares/sesionMiddleware');
+const { ARTICULOS, VENTAS } = require('../config/permisos');
 
 const {
   obtenerProductos,
@@ -19,18 +21,20 @@ const {
 
 const router = Router();
 
-// GET /api/productos?buscar=texto -> lista de articulos, filtrada por codigo o nombre
-router.get('/', validarBusqueda, obtenerProductos);
+// GET /api/productos?buscar=texto -> lista de articulos, filtrada por codigo o nombre.
+// Tambien la usa la pantalla de Ventas para elegir que vender.
+router.get('/', requierePermiso(ARTICULOS, VENTAS), validarBusqueda, obtenerProductos);
 
 // GET /api/productos/:codigo -> un articulo
-router.get('/:codigo', validarCodigo, cargarProducto, obtenerProdCodigo);
+router.get('/:codigo', requierePermiso(ARTICULOS), validarCodigo, cargarProducto, obtenerProdCodigo);
 
 // POST /api/productos -> alta
-router.post('/', validarAlta, verificarCodigoLibre, crearProducto);
+router.post('/', requierePermiso(ARTICULOS), validarAlta, verificarCodigoLibre, crearProducto);
 
 // PUT /api/productos/:codigo -> modificacion
 router.put(
   '/:codigo',
+  requierePermiso(ARTICULOS),
   validarCodigo,
   validarModificacion,
   cargarProducto,
@@ -39,6 +43,6 @@ router.put(
 );
 
 // DELETE /api/productos/:codigo -> baja
-router.delete('/:codigo', validarCodigo, cargarProducto, bajaProducto);
+router.delete('/:codigo', requierePermiso(ARTICULOS), validarCodigo, cargarProducto, bajaProducto);
 
 module.exports = router;

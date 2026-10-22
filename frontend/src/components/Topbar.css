@@ -43,6 +43,30 @@
   color: var(--gray-300);
 }
 
+.topbar-salir {
+  margin-left: 6px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--topbar-text);
+  background: none;
+  border: 1px solid var(--gray-600);
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.topbar-salir:hover {
+  background: var(--gray-800);
+  border-color: var(--gray-400);
+}
+
+.topbar-salir:focus-visible {
+  outline: 2px solid var(--gray-0);
+  outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
   .topbar {
     padding: 0 16px;

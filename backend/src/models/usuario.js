@@ -1,21 +1,8 @@
-const { randomBytes, scrypt, timingSafeEqual } = require('crypto');
-const { promisify } = require('util');
 const { Model } = require('sequelize');
-
-const scryptAsync = promisify(scrypt);
+const { hashear, coincide } = require('../utils/contrasenas');
 
 // Codigo de area de 2 digitos, un espacio y 8 digitos de numero: "11 12345678".
 const FORMATO_TELEFONO = /^\d{2} \d{8}$/;
-
-const LARGO_CLAVE = 64;
-
-// La contrasena nunca se guarda en texto plano: se guarda la sal y el hash
-// scrypt, separados por ":".
-async function hashear(contrasena) {
-  const sal = randomBytes(16).toString('hex');
-  const clave = await scryptAsync(contrasena, sal, LARGO_CLAVE);
-  return `${sal}:${clave.toString('hex')}`;
-}
 
 const textoObligatorio = (msg) => ({
   notNull: { msg },
@@ -31,10 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     // Compara una contrasena ingresada con el hash guardado. El usuario tiene
     // que haberse buscado con el scope `conContrasena`: el scope por defecto
     // no trae esa columna.
-    async verificarContrasena(contrasena) {
-      const [sal, guardada] = this.contrasena.split(':');
-      const clave = await scryptAsync(contrasena, sal, LARGO_CLAVE);
-      return timingSafeEqual(clave, Buffer.from(guardada, 'hex'));
+    verificarContrasena(contrasena) {
+      return coincide(contrasena, this.contrasena);
     }
 
     // El hash no sale nunca en las respuestas, ni siquiera recien creado el

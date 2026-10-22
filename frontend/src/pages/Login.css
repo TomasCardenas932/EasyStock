@@ -1,0 +1,108 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.login-contenido {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 72px 16px 32px;
+}
+
+.login-tarjeta {
+  width: 100%;
+  max-width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.08);
+  overflow: hidden;
+}
+
+.login-encabezado {
+  padding: 32px 40px;
+  background: var(--gray-1000);
+}
+
+.login-encabezado h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  color: var(--gray-0);
+}
+
+.login-encabezado p {
+  font-size: 17px;
+  color: var(--topbar-text-muted);
+}
+
+.login-form {
+  padding: 36px 40px 40px;
+}
+
+.login-contrasena {
+  position: relative;
+}
+
+.form-campo .login-contrasena input {
+  padding-right: 88px;
+}
+
+.form-campo .login-contrasena input[aria-invalid='true'] {
+  padding-right: 87px;
+}
+
+.login-mostrar {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--gray-700);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-mostrar:hover {
+  color: var(--gray-1000);
+}
+
+.login-mostrar:focus-visible {
+  outline: 2px solid var(--gray-1000);
+  outline-offset: 0;
+}
+
+.login-ingresar {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+}
+
+.login-pie {
+  padding: 18px 40px;
+  border-top: 1px solid var(--border);
+  background: var(--gray-50);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 560px) {
+  .login-contenido {
+    padding-top: 32px;
+  }
+
+  .login-encabezado,
+  .login-form,
+  .login-pie {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

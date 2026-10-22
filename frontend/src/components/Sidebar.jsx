@@ -1,25 +1,21 @@
 import { NavLink } from 'react-router'
+import PANTALLAS from '../pages/pantallas.js'
 import './Sidebar.css'
 
-// Pantallas definidas en el BRD v1.2, seccion 5.
-const SECTIONS = [
-  { id: 'SC001', label: 'Dashboard', path: '/Dashboard' },
-  { id: 'SC002', label: 'Articulos', path: '/articulos' },
-  { id: 'SC003', label: 'Ventas', path: '/ventas' },
-  { id: 'SC004', label: 'Movimientos', path: '/movimientos' },
-  { id: 'SC005', label: 'Alertas' },
-  { id: 'SC006', label: 'Informes' },
-]
+// Solo se muestran las pantallas para las que el rol del usuario tiene un
+// permiso con el mismo nombre que la etiqueta.
+function Sidebar({ sections = PANTALLAS, permisos = [] }) {
+  const habilitadas = sections.filter((section) => permisos.includes(section.label))
 
-function Sidebar({ sections = SECTIONS }) {
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav" aria-label="Navegacion principal">
         <ul className="sidebar-list">
-          {sections.map((section) => (
+          {habilitadas.map((section) => (
             <li key={section.id} className="sidebar-item">
               {section.path ? (
-                <NavLink to={section.path} className="sidebar-link is-navigable">
+                // end: el Dashboard ("/") no queda marcado en las demas pantallas.
+                <NavLink to={section.path} end className="sidebar-link is-navigable">
                   {section.label}
                 </NavLink>
               ) : (

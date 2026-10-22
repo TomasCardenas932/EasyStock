@@ -1,31 +1,62 @@
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Outlet, Route, Routes } from 'react-router'
 import Topbar from './components/Topbar.jsx'
 import Sidebar from './components/Sidebar.jsx'
-import Dashboard from './pages/Dashboard.jsx'
-import Catalogo from './pages/Catalogo.jsx'
-import Ventas from './pages/Ventas.jsx'
-import Movimientos from './pages/Movimientos.jsx'
+import RutaProtegida from './components/RutaProtegida.jsx'
+import ConPermiso from './components/ConPermiso.jsx'
+import Login from './pages/Login.jsx'
+import PANTALLAS from './pages/pantallas.js'
+import { useSesion } from './sesion/SesionContext.js'
 import './App.css'
 
-function App() {
+// Estructura de las pantallas con sesion: encabezado con el nombre del
+// empleado (FRD, CA-10), barra lateral y la pantalla elegida.
+function Principal() {
+  const { usuario, permisos, cerrar } = useSesion()
+
   return (
     <div className="app">
-      <Topbar appName="EasyStock" userName="Usuario" />
+      <Topbar
+        appName="EasyStock"
+        userName={`${usuario.nombre} ${usuario.apellido}`}
+        onCerrarSesion={cerrar}
+      />
 
       <div className="app-body">
-        <Sidebar />
+        <Sidebar permisos={permisos} />
 
         <main className="app-content">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/articulos" element={<Catalogo />} />
-            <Route path="/ventas" element={<Ventas />} />
-            <Route path="/movimientos" element={<Movimientos />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        element={
+          <RutaProtegida>
+            <Principal />
+          </RutaProtegida>
+        }
+      >
+        {PANTALLAS.filter((pantalla) => pantalla.path).map(({ id, label, path, componente: Pantalla }) => (
+          <Route
+            key={id}
+            path={path}
+            element={
+              <ConPermiso permiso={label}>
+                <Pantalla />
+              </ConPermiso>
+            }
+          />
+        ))}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   )
 }
 

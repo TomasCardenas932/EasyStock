@@ -8,6 +8,8 @@ const {
   bajaProveedor,
 } = require("../controllers/proveedoresController.js")
 const { validarBusqueda } = require('../middlewares/validar');
+const { requierePermiso } = require('../middlewares/sesionMiddleware');
+const { ARTICULOS } = require('../config/permisos');
 const {
   validarNombre,
   validarAlta,
@@ -19,18 +21,25 @@ const router = Router();
 
 // GET /api/proveedores?buscar=texto -> lista de proveedores, filtrada por nombre.
 // Tambien alimenta el selector de proveedores del ABM de articulos.
-router.get('/', validarBusqueda, obtenerProveedores);
+router.get('/', requierePermiso(ARTICULOS), validarBusqueda, obtenerProveedores);
 
 // GET /api/proveedores/:nombre -> un proveedor
-router.get('/:nombre', validarNombre, cargarProveedor, obtenerProvNombre);
+router.get('/:nombre', requierePermiso(ARTICULOS), validarNombre, cargarProveedor, obtenerProvNombre);
 
 // POST /api/proveedores -> alta
-router.post('/', validarAlta, crearProveedor);
+router.post('/', requierePermiso(ARTICULOS), validarAlta, crearProveedor);
 
 // PUT /api/proveedores/:nombre -> modificacion
-router.put('/:nombre', validarNombre, validarModificacion, cargarProveedor, modificarProveedor);
+router.put(
+  '/:nombre',
+  requierePermiso(ARTICULOS),
+  validarNombre,
+  validarModificacion,
+  cargarProveedor,
+  modificarProveedor
+);
 
 // DELETE /api/proveedores/:nombre -> baja.
-router.delete('/:nombre', validarNombre, cargarProveedor, bajaProveedor);
+router.delete('/:nombre', requierePermiso(ARTICULOS), validarNombre, cargarProveedor, bajaProveedor);
 
 module.exports = router;

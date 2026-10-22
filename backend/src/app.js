@@ -7,11 +7,18 @@ const movimientosRouter = require('./routes/movimientos');
 const usuariosRouter = require('./routes/usuarios');
 const rolesRouter = require('./routes/roles');
 const permisosRouter = require('./routes/permisos');
+const sesionRouter = require('./routes/sesion');
+const { requiereSesion } = require('./middlewares/sesionMiddleware');
 const ErrorHttp = require('./Excepciones/ErrorHttp');
 
 const app = express();
 
 app.use(express.json());
+
+app.use('/api/sesion', sesionRouter);
+
+// Todo lo que sigue necesita una sesion iniciada (FRD, regla 15).
+app.use('/api', requiereSesion);
 
 app.use('/api/productos', productosRouter);
 app.use('/api/proveedores', proveedoresRouter);

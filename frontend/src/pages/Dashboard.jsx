@@ -19,7 +19,7 @@ const formatoFecha = new Intl.DateTimeFormat('es-AR', {
 const RECUADROS = [
   { clave: 'articulos', texto: 'Articulos cargados' },
   { clave: 'sinStock', texto: 'Sin stock', destacado: true },
-  { clave: 'paraReponer', texto: 'Para reponer (stock ≤ umbral)' },
+  { clave: 'paraReponer', texto: 'Para reponer (sin stock o stock ≤ umbral)' },
   { clave: 'sinPrecio', texto: 'Sin precio al publico' },
 ]
 
@@ -62,8 +62,8 @@ function ArticulosParaReponer({ articulos, total }) {
                     <td className={estado === 'sinStock' ? 'num is-fuerte' : 'num'}>
                       {articulo.stock}
                     </td>
-                    <td className="num">{articulo.umbralMinimo}</td>
-                    <td className="num is-fuerte">{cantidadSugerida(articulo)}</td>
+                    <td className="num">{articulo.umbralMinimo ?? '-'}</td>
+                    <td className="num is-fuerte">{cantidadSugerida(articulo) ?? '-'}</td>
                     <td className="is-largo">{articulo.proveedor?.nombre ?? '-'}</td>
                   </tr>
                 )

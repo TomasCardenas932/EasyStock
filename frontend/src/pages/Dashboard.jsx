@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { obtenerResumen } from '../api/dashboard.js'
 import { useSesion } from '../sesion/SesionContext.js'
+import { ESTADOS, cantidadSugerida, estadoStock } from './reposicion.js'
 import './Catalogo.css'
 import './Dashboard.css'
 
@@ -22,6 +23,65 @@ const RECUADROS = [
   { clave: 'sinPrecio', texto: 'Sin precio al publico' },
 ]
 
+// FRD, regla 1: los articulos mas urgentes de reponer, primero los que no
+// tienen stock. total es la cantidad de articulos para reponer.
+function ArticulosParaReponer({ articulos, total }) {
+  return (
+    <section className="dashboard-panel" aria-labelledby="dashboard-reponer">
+      <header className="dashboard-panel-header">
+        <h2 id="dashboard-reponer">Articulos para reponer</h2>
+        <p>Primero los que no tienen stock. Cantidad sugerida = 2 × umbral − stock.</p>
+      </header>
+
+      {articulos.length === 0 ? (
+        <p className="dashboard-panel-vacio">No hay articulos para reponer.</p>
+      ) : (
+        <div className="dashboard-tabla">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th>Estado</th>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th className="num">Stock</th>
+                <th className="num">Umbral</th>
+                <th className="num">Pedir</th>
+                <th>Proveedor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {articulos.map((articulo) => {
+                const estado = estadoStock(articulo)
+                return (
+                  <tr key={articulo.id}>
+                    <td>
+                      <span className={`estado-stock is-${estado}`}>{ESTADOS[estado]}</span>
+                    </td>
+                    <td className="mono">{articulo.codigo}</td>
+                    <td>{articulo.nombre}</td>
+                    <td className={estado === 'sinStock' ? 'num is-fuerte' : 'num'}>
+                      {articulo.stock}
+                    </td>
+                    <td className="num">{articulo.umbralMinimo}</td>
+                    <td className="num is-fuerte">{cantidadSugerida(articulo)}</td>
+                    <td>{articulo.proveedor?.nombre ?? '-'}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {articulos.length < total && (
+        <p className="dashboard-panel-pie">
+          Se muestran los {articulos.length} mas urgentes de {total} articulos para reponer.
+        </p>
+      )}
+    </section>
+  )
+}
+
 function saludo(fecha) {
   const hora = fecha.getHours()
   if (hora >= 5 && hora < 12) return 'Buenos dias'
@@ -35,7 +95,8 @@ function saludo(fecha) {
 function Dashboard() {
   const { usuario } = useSesion()
   const [ahora] = useState(() => new Date())
-  // { articulos, sinStock, paraReponer, sinPrecio, fecha } o null mientras carga.
+  // { articulos, sinStock, paraReponer, sinPrecio, reponer, fecha } o null
+  // mientras carga. reponer trae solo los mas urgentes, ya ordenados.
   const [resumen, setResumen] = useState(null)
   const [error, setError] = useState(null)
 
@@ -92,6 +153,8 @@ function Dashboard() {
           ))}
         </ul>
       )}
+
+      {resumen && <ArticulosParaReponer articulos={resumen.reponer} total={resumen.paraReponer} />}
     </section>
   )
 }

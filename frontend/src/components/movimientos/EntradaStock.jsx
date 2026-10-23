@@ -3,6 +3,7 @@ import Modal from '../Modal.jsx'
 import { listarProductos } from '../../api/productos.js'
 import { registrarEntrada } from '../../api/movimientos.js'
 import { ApiError } from '../../api/http.js'
+import { cantidadSugerida, estadoStock } from '../../pages/reposicion.js'
 import '../abm.css'
 
 // Campos del backend que corresponden a cada campo del formulario.
@@ -25,13 +26,12 @@ function buscarArticulo(productos, texto) {
   return porCodigo.length === 1 ? porCodigo[0] : null
 }
 
-// Reglas Q1 y Q2 del FRD: con el stock en el umbral o por debajo, se sugiere
-// llevarlo al doble del umbral.
+// Con el stock en el umbral o por debajo, sugiere cuanto reponer.
 function ayudaArticulo(producto) {
-  const { stock, umbralMinimo } = producto
+  const { umbralMinimo } = producto
   if (umbralMinimo == null) return 'Sin umbral minimo asignado.'
-  const sugerida = 2 * umbralMinimo - stock
-  return stock <= umbralMinimo && sugerida > 0
+  const sugerida = cantidadSugerida(producto)
+  return estadoStock(producto) && sugerida > 0
     ? `Umbral minimo ${umbralMinimo}. Cantidad sugerida para reponer: ${sugerida}.`
     : `Umbral minimo ${umbralMinimo}.`
 }

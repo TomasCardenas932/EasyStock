@@ -8,8 +8,6 @@ const PERMISOS = {
   ARTICULOS: 'Articulos',
   VENTAS: 'Ventas',
   MOVIMIENTOS: 'Movimientos',
-  ALERTAS: 'Alertas',
-  INFORMES: 'Informes',
 };
 
 module.exports = PERMISOS;

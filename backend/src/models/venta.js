@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
           isInt: { msg: 'El total debe ser un numero entero' },
           min: { args: [0], msg: 'El total no puede ser negativo' },
           // El total se deriva de los articulos: si no coincide, el registro
-          // quedaria inconsistente para los informes de ventas.
+          // quedaria inconsistente.
           coincideConArticulos(total) {
             // Con un total o una lista invalidos no hay comparacion confiable;
             // esos errores ya los informan los otros validadores.

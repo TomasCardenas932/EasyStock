@@ -9,7 +9,7 @@ function ConPermiso({ permiso, children }) {
 
   if (permisos.includes(permiso)) return children
 
-  const habilitada = PANTALLAS.find((pantalla) => pantalla.path && permisos.includes(pantalla.label))
+  const habilitada = PANTALLAS.find((pantalla) => permisos.includes(pantalla.label))
   if (habilitada) return <Navigate to={habilitada.path} replace />
 
   return (

@@ -27,7 +27,7 @@ function Login() {
 
   // Con la sesion iniciada se va a la pantalla que se habia pedido, o al
   // Dashboard (FRD, CA-10).
-  if (usuario) return <Navigate to={location.state?.desde ?? '/'} replace />
+  if (usuario) return <Navigate to={location.state?.desde ?? '/dashboard'} replace />
 
   function handleChange(event) {
     const { name, value } = event.target

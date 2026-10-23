@@ -13,14 +13,9 @@ function Sidebar({ sections = PANTALLAS, permisos = [] }) {
         <ul className="sidebar-list">
           {habilitadas.map((section) => (
             <li key={section.id} className="sidebar-item">
-              {section.path ? (
-                // end: el Dashboard ("/") no queda marcado en las demas pantallas.
-                <NavLink to={section.path} end className="sidebar-link is-navigable">
-                  {section.label}
-                </NavLink>
-              ) : (
-                <span className="sidebar-link">{section.label}</span>
-              )}
+              <NavLink to={section.path} className="sidebar-link is-navigable">
+                {section.label}
+              </NavLink>
             </li>
           ))}
         </ul>

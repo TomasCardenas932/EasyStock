@@ -43,7 +43,7 @@ function App() {
           </RutaProtegida>
         }
       >
-        {PANTALLAS.filter((pantalla) => pantalla.path).map(({ id, label, path, componente: Pantalla }) => (
+        {PANTALLAS.map(({ id, label, path, componente: Pantalla }) => (
           <Route
             key={id}
             path={path}
@@ -54,7 +54,8 @@ function App() {
             }
           />
         ))}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* "/" y cualquier direccion que no existe van al Dashboard. */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
   )

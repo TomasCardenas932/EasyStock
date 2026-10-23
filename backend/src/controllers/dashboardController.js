@@ -1,8 +1,9 @@
 const { Op, col, literal } = require('sequelize');
 const { Producto, Proveedor } = require('../models');
 
-// Cuantos articulos para reponer muestra el Dashboard: los mas urgentes.
-const LIMITE_REPONER = 6;
+// Cuantos articulos muestra cada lista del Dashboard: para reponer, los mas
+// urgentes; sin precio, los primeros por codigo.
+const LIMITE_LISTA = 6;
 
 // Reglas C1 y C2 del FRD: stock igual o menor al umbral minimo. Los que no
 // tienen umbral quedan afuera (regla C4), aunque esten sin stock.
@@ -23,22 +24,33 @@ const ORDEN_URGENCIA = [
 
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };
 
-// Recuadros y lista de reposicion del Dashboard (FRD, SC001).
-const obtenerResumen = async (req, res) => {
-  const [articulos, sinStock, paraReponer, sinPrecio, reponer] = await Promise.all([
-    Producto.count(),
-    Producto.count({ where: { stock: 0 } }),
-    Producto.count({ where: PARA_REPONER }),
-    Producto.count({ where: { precioPublico: null } }),
-    Producto.findAll({
-      where: PARA_REPONER,
-      include: INCLUIR_PROVEEDOR,
-      order: ORDEN_URGENCIA,
-      limit: LIMITE_REPONER,
-    }),
-  ]);
+// Regla 2: un articulo sin precio al publico no se puede vender.
+const SIN_PRECIO = { precioPublico: null };
 
-  res.json({ articulos, sinStock, paraReponer, sinPrecio, reponer });
+// Recuadros y listas de reposicion y de articulos sin precio del Dashboard
+// (FRD, SC001).
+const obtenerResumen = async (req, res) => {
+  const [articulos, sinStock, paraReponer, sinPrecio, reponer, articulosSinPrecio] =
+    await Promise.all([
+      Producto.count(),
+      Producto.count({ where: { stock: 0 } }),
+      Producto.count({ where: PARA_REPONER }),
+      Producto.count({ where: SIN_PRECIO }),
+      Producto.findAll({
+        where: PARA_REPONER,
+        include: INCLUIR_PROVEEDOR,
+        order: ORDEN_URGENCIA,
+        limit: LIMITE_LISTA,
+      }),
+      Producto.findAll({
+        where: SIN_PRECIO,
+        include: INCLUIR_PROVEEDOR,
+        order: [['codigo', 'ASC']],
+        limit: LIMITE_LISTA,
+      }),
+    ]);
+
+  res.json({ articulos, sinStock, paraReponer, sinPrecio, reponer, articulosSinPrecio });
 };
 
 module.exports = {

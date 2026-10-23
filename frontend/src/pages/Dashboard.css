@@ -45,8 +45,19 @@
   color: var(--gray-0);
 }
 
-.dashboard-panel {
+/* Reposicion ocupa tres cuartos del ancho y los articulos sin precio el
+   cuarto restante. Los dos paneles toman el alto del mas largo. */
+.dashboard-paneles {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 24px;
   margin-top: 32px;
+}
+
+.dashboard-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -71,9 +82,41 @@
   padding: 0 24px 24px;
 }
 
+/* Al pie del panel aunque la lista sea mas corta que el panel de al lado. */
 .dashboard-panel-pie {
+  margin-top: auto;
   padding: 12px 24px;
   border-top: 1px solid var(--border);
+}
+
+.dashboard-sin-precio {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-sin-precio li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.dashboard-sin-precio-nombre {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.dashboard-sin-precio-nombre .mono {
+  font-weight: 700;
+}
+
+.dashboard-sin-precio-proveedor {
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 /* La tabla del panel lleva el encabezado claro: el negro queda para las
@@ -95,6 +138,13 @@
 .dashboard-tabla th:last-child,
 .dashboard-tabla td:last-child {
   padding-right: 24px;
+}
+
+/* Con tres cuartos del ancho, nombre y proveedor pasan a otra linea en vez
+   de obligar a desplazar la tabla. */
+.dashboard-tabla .is-largo {
+  white-space: normal;
+  min-width: 140px;
 }
 
 .dashboard-tabla .is-fuerte {
@@ -122,6 +172,10 @@
   .dashboard-recuadros {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+  }
+
+  .dashboard-paneles {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

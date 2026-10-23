@@ -58,13 +58,13 @@ function ArticulosParaReponer({ articulos, total }) {
                       <span className={`estado-stock is-${estado}`}>{ESTADOS[estado]}</span>
                     </td>
                     <td className="mono">{articulo.codigo}</td>
-                    <td>{articulo.nombre}</td>
+                    <td className="is-largo">{articulo.nombre}</td>
                     <td className={estado === 'sinStock' ? 'num is-fuerte' : 'num'}>
                       {articulo.stock}
                     </td>
                     <td className="num">{articulo.umbralMinimo}</td>
                     <td className="num is-fuerte">{cantidadSugerida(articulo)}</td>
-                    <td>{articulo.proveedor?.nombre ?? '-'}</td>
+                    <td className="is-largo">{articulo.proveedor?.nombre ?? '-'}</td>
                   </tr>
                 )
               })}
@@ -76,6 +76,42 @@ function ArticulosParaReponer({ articulos, total }) {
       {articulos.length < total && (
         <p className="dashboard-panel-pie">
           Se muestran los {articulos.length} mas urgentes de {total} articulos para reponer.
+        </p>
+      )}
+    </section>
+  )
+}
+
+// FRD, regla 2: los articulos sin precio al publico, que no se pueden vender
+// hasta que se les asigne uno. total es la cantidad de articulos sin precio.
+function ArticulosSinPrecio({ articulos, total }) {
+  return (
+    <section className="dashboard-panel" aria-labelledby="dashboard-sin-precio">
+      <header className="dashboard-panel-header">
+        <h2 id="dashboard-sin-precio">Sin precio al publico</h2>
+        <p>No se pueden vender hasta asignarles precio.</p>
+      </header>
+
+      {articulos.length === 0 ? (
+        <p className="dashboard-panel-vacio">Todos los articulos tienen precio.</p>
+      ) : (
+        <ul className="dashboard-sin-precio">
+          {articulos.map((articulo) => (
+            <li key={articulo.id}>
+              <span className="dashboard-sin-precio-nombre">
+                <span className="mono">{articulo.codigo}</span> {articulo.nombre}
+              </span>
+              <span className="dashboard-sin-precio-proveedor">
+                {articulo.proveedor?.nombre ?? 'Sin proveedor'}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {articulos.length < total && (
+        <p className="dashboard-panel-pie">
+          Se muestran {articulos.length} de {total} articulos sin precio.
         </p>
       )}
     </section>
@@ -95,8 +131,9 @@ function saludo(fecha) {
 function Dashboard() {
   const { usuario } = useSesion()
   const [ahora] = useState(() => new Date())
-  // { articulos, sinStock, paraReponer, sinPrecio, reponer, fecha } o null
-  // mientras carga. reponer trae solo los mas urgentes, ya ordenados.
+  // { articulos, sinStock, paraReponer, sinPrecio, reponer, articulosSinPrecio,
+  // fecha } o null mientras carga. Las dos listas traen solo los primeros
+  // articulos, ya ordenados.
   const [resumen, setResumen] = useState(null)
   const [error, setError] = useState(null)
 
@@ -154,7 +191,12 @@ function Dashboard() {
         </ul>
       )}
 
-      {resumen && <ArticulosParaReponer articulos={resumen.reponer} total={resumen.paraReponer} />}
+      {resumen && (
+        <div className="dashboard-paneles">
+          <ArticulosParaReponer articulos={resumen.reponer} total={resumen.paraReponer} />
+          <ArticulosSinPrecio articulos={resumen.articulosSinPrecio} total={resumen.sinPrecio} />
+        </div>
+      )}
     </section>
   )
 }

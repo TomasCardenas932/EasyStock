@@ -90,7 +90,13 @@
   content: '! ';
 }
 
+.form-ayuda {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .form-error-general,
+.form-exito,
 .baja-advertencia {
   padding: 12px 14px;
   border-left: 4px solid var(--gray-1000);
@@ -99,7 +105,8 @@
   font-size: 14px;
 }
 
-.form-error-general {
+.form-error-general,
+.form-exito {
   font-weight: 600;
 }
 

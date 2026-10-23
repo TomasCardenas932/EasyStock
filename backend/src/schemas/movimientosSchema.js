@@ -17,6 +17,30 @@ const esquemaBusqueda = Joi.object({
     .messages({ 'string.pattern.base': SOLO_FECHA_O_IDENTIFICADOR }),
 });
 
+// Entrada de stock (FRD, regla 7): unidades que se suman a un articulo, con la
+// factura o el remito como referencia opcional. Vacia viaja como null.
+const esquemaEntrada = Joi.object({
+  productoId: Joi.number().integer().min(1).required().label('El articulo'),
+  cantidad: Joi.number()
+    .integer()
+    .min(1)
+    .required()
+    .label('La cantidad')
+    .messages({
+      'any.required': '{#label} es obligatoria',
+      'number.min': '{#label} debe ser mayor a 0',
+    }),
+  referencia: Joi.string()
+    .trim()
+    .max(100)
+    .allow(null)
+    .empty('')
+    .default(null)
+    .label('La referencia')
+    .messages({ 'string.max': '{#label} no puede tener mas de {#limit} caracteres' }),
+});
+
 module.exports = {
   esquemaBusqueda,
+  esquemaEntrada,
 };

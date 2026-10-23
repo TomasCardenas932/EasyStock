@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { validarBusqueda } = require('../middlewares/validar');
 const { requierePermiso } = require('../middlewares/sesionMiddleware');
-const { ARTICULOS, VENTAS } = require('../config/permisos');
+const { ARTICULOS, VENTAS, MOVIMIENTOS } = require('../config/permisos');
 
 const {
   obtenerProductos,
@@ -22,8 +22,14 @@ const {
 const router = Router();
 
 // GET /api/productos?buscar=texto -> lista de articulos, filtrada por codigo o nombre.
-// Tambien la usa la pantalla de Ventas para elegir que vender.
-router.get('/', requierePermiso(ARTICULOS, VENTAS), validarBusqueda, obtenerProductos);
+// Tambien la usan la pantalla de Ventas para elegir que vender y la entrada de
+// stock de Movimientos para elegir el articulo.
+router.get(
+  '/',
+  requierePermiso(ARTICULOS, VENTAS, MOVIMIENTOS),
+  validarBusqueda,
+  obtenerProductos
+);
 
 // GET /api/productos/:codigo -> un articulo
 router.get('/:codigo', requierePermiso(ARTICULOS), validarCodigo, cargarProducto, obtenerProdCodigo);

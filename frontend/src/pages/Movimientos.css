@@ -1,0 +1,6 @@
+/* Factura o remito de una entrada de stock, a continuacion del detalle. */
+.movimiento-referencia {
+  margin-left: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}

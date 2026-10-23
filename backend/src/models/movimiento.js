@@ -1,12 +1,13 @@
 const { Model } = require('sequelize');
 
-const TIPOS = ['alta', 'baja', 'modificacion', 'venta'];
+const TIPOS = ['alta', 'baja', 'modificacion', 'venta', 'entrada'];
 const ENTIDADES = ['producto', 'proveedor'];
 
 const INDICE_UNICO = 'movimientos_identificador_unico';
 
-// Los movimientos no se cargan a mano: los generan los hooks de Producto,
-// Proveedor y Venta cada vez que se guarda una de esas operaciones.
+// Los movimientos los generan los hooks de Producto, Proveedor y Venta cada
+// vez que se guarda una de esas operaciones. El unico que se carga a mano es
+// la entrada de stock (controllers/movimientosController.js).
 module.exports = (sequelize, DataTypes) => {
   class Movimiento extends Model {
     // Guarda un movimiento con su identificador: el tipo, "#" y el numero que
@@ -15,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     // mas uno. Corre en la transaccion de la operacion que lo genera.
     // Una cantidad en 0 (o sin cantidad) se guarda vacia: el movimiento no
     // cambio el stock de ningun articulo.
-    static async registrar({ tipo, entidad, detalle, cantidad }, { transaction }) {
+    static async registrar({ tipo, entidad, detalle, cantidad, referencia }, { transaction }) {
       const anteriores = await Movimiento.count({ where: { tipo }, transaction });
       return Movimiento.create(
         {
@@ -24,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
           entidad,
           detalle,
           cantidad: cantidad || null,
+          referencia,
         },
         { transaction }
       );
@@ -78,6 +80,12 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isInt: { msg: 'La cantidad del movimiento debe ser un numero entero' },
         },
+      },
+      referencia: {
+        // Factura o remito de una entrada de stock. Opcional, y vacio en los
+        // demas movimientos.
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {

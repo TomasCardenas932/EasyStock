@@ -164,7 +164,7 @@ function Dashboard() {
         {resumen && (
           <p>
             Este es el estado del inventario al {formatoFecha.format(resumen.fecha)}. Se recalcula
-            con cada venta, entrada o ajuste de stock.
+            con cada venta, entrada de stock o modificacion de un articulo.
           </p>
         )}
       </header>

@@ -37,10 +37,36 @@ const verificarRol = async (req, res, next) => {
   next();
 };
 
+// El usuario de la sesion no puede cambiarse el rol: si se lo quitara, o le
+// pusiera uno sin el permiso Usuarios, nadie podria volver a darselo desde la
+// pantalla. Corre despues de cargarUsuario.
+const verificarRolPropio = (req, res, next) => {
+  const { rolId } = req.body;
+
+  if (req.usuario.id === req.sesion.id && rolId !== undefined && rolId !== req.usuario.rolId) {
+    throw new ErrorHttp(409, 'No podes cambiar tu propio rol', {
+      detalles: [{ campo: 'rolId', mensaje: 'Pedile a otro administrador que lo cambie' }],
+    });
+  }
+
+  next();
+};
+
+// Por el mismo motivo, el usuario de la sesion no puede darse de baja.
+const verificarNoEsPropio = (req, res, next) => {
+  if (req.usuario.id === req.sesion.id) {
+    throw new ErrorHttp(409, 'No podes darte de baja a vos mismo');
+  }
+
+  next();
+};
+
 module.exports = {
   validarId,
   validarAlta,
   validarModificacion,
   cargarUsuario,
   verificarRol,
+  verificarRolPropio,
+  verificarNoEsPropio,
 };

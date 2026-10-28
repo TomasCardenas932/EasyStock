@@ -1,6 +1,13 @@
-/* Factura o remito de una entrada de stock, a continuacion del detalle. */
+/* El detalle puede ocupar dos lineas, asi la tabla entra a lo ancho con la
+   columna Usuario. */
+.tabla .movimiento-detalle {
+  min-width: 260px;
+  white-space: normal;
+}
+
+/* Factura o remito de una entrada de stock, debajo del detalle. */
 .movimiento-referencia {
-  margin-left: 10px;
+  display: block;
   font-size: 13px;
   color: var(--text-muted);
 }

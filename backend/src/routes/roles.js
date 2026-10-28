@@ -1,4 +1,6 @@
 const { Router } = require('express');
+const { requierePermiso } = require('../middlewares/sesionMiddleware');
+const { USUARIOS } = require('../config/permisos');
 
 const {
   obtenerRoles,
@@ -20,6 +22,9 @@ const {
 } = require('../middlewares/rolesMiddleware');
 
 const router = Router();
+
+// Los roles se administran desde la pantalla de usuarios.
+router.use(requierePermiso(USUARIOS));
 
 // GET /api/roles -> lista de roles, cada uno con sus permisos
 router.get('/', obtenerRoles);

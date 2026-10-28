@@ -15,8 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     // no se borran, asi que ese numero es la cantidad de movimientos del tipo
     // mas uno. Corre en la transaccion de la operacion que lo genera.
     // Una cantidad en 0 (o sin cantidad) se guarda vacia: el movimiento no
-    // cambio el stock de ningun articulo.
-    static async registrar({ tipo, entidad, detalle, cantidad, referencia }, { transaction }) {
+    // cambio el stock de ningun articulo. autor es el usuario que hizo la
+    // operacion (Usuario#autor); sin autor, como en los seeders, queda vacio.
+    static async registrar(
+      { tipo, entidad, detalle, cantidad, referencia },
+      { transaction, autor }
+    ) {
       const anteriores = await Movimiento.count({ where: { tipo }, transaction });
       return Movimiento.create(
         {
@@ -26,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
           detalle,
           cantidad: cantidad || null,
           referencia,
+          usuarioId: autor?.id ?? null,
+          usuarioNombre: autor?.nombre ?? null,
         },
         { transaction }
       );
@@ -84,6 +90,17 @@ module.exports = (sequelize, DataTypes) => {
       referencia: {
         // Factura o remito de una entrada de stock. Opcional, y vacio en los
         // demas movimientos.
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      usuarioId: {
+        // Usuario que hizo la operacion (BRD, CB-07). Sin clave foranea: el
+        // movimiento queda aunque el usuario se de de baja.
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      usuarioNombre: {
+        // Nombre y apellido del usuario al momento de la operacion.
         type: DataTypes.STRING,
         allowNull: true,
       },

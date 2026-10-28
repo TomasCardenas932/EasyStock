@@ -20,6 +20,19 @@ const CAMPOS = {
 
 const esquemaCodigo = Joi.object({ codigo: texto('El codigo').required() });
 
+// Proveedor del articulo de :codigo, para cuando el codigo se repite entre
+// proveedores (BRD, regla 13): su id, o "ninguno" para el articulo sin
+// proveedor. Sin el parametro, el codigo solo tiene que alcanzar.
+const esquemaProveedorDelCodigo = Joi.object({
+  proveedorId: Joi.alternatives()
+    .try(
+      Joi.number().integer().min(1).messages({ 'number.min': '{#label} no es valido' }),
+      Joi.string().valid('ninguno')
+    )
+    .label('El proveedor')
+    .messages({ 'alternatives.types': '{#label} debe ser un id o "ninguno"' }),
+});
+
 const esquemaAlta = Joi.object(CAMPOS);
 
 // En la modificacion viajan solo los campos que cambian.
@@ -29,6 +42,7 @@ const esquemaModificacion = esquemaAlta.fork(['codigo', 'nombre', 'costo'], (cam
 
 module.exports = {
   esquemaCodigo,
+  esquemaProveedorDelCodigo,
   esquemaAlta,
   esquemaModificacion,
 };

@@ -42,12 +42,15 @@ export function alVencerSesion(callback) {
   avisarSesionVencida = callback
 }
 
+// datos: el cuerpo completo de la respuesta, para los errores que traen algo
+// mas que el mensaje (por ejemplo, los candidatos de un codigo repetido).
 export class ApiError extends Error {
-  constructor(mensaje, status, detalles = []) {
+  constructor(mensaje, status, detalles = [], datos = null) {
     super(mensaje)
     this.name = 'ApiError'
     this.status = status
     this.detalles = detalles
+    this.datos = datos
   }
 }
 
@@ -80,7 +83,7 @@ export async function request(url, { body, ...options } = {}) {
 
   const data = await res.json().catch(() => null)
   if (!res.ok) {
-    throw new ApiError(data?.error ?? SIN_CONEXION, res.status, data?.detalles ?? [])
+    throw new ApiError(data?.error ?? SIN_CONEXION, res.status, data?.detalles ?? [], data)
   }
   return data
 }

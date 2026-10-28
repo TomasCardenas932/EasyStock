@@ -5,6 +5,8 @@ const { sequelize, Venta } = require('../models');
 // descontar de cada producto, ya chequeadas contra el stock.
 const registrarVenta = async (req, res) => {
   const { articulos, unidades } = req.venta;
+  // El usuario de la sesion queda en la venta y en sus movimientos.
+  const autor = req.sesion.autor();
 
   // Descuento de stock y alta de la venta van juntos: si algo falla en el
   // medio, no queda stock descontado sin venta ni venta sin descontar.
@@ -18,7 +20,10 @@ const registrarVenta = async (req, res) => {
       (suma, articulo) => suma + articulo.precio * articulo.cantidad,
       0
     );
-    return Venta.create({ articulos, total }, { transaction });
+    return Venta.create(
+      { articulos, total, usuarioId: autor.id, usuarioNombre: autor.nombre },
+      { transaction, autor }
+    );
   });
 
   res.status(201).json(venta);

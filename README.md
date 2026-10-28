@@ -13,8 +13,8 @@
 ## Descripción
 
 EasyStock centraliza el control de stock de un comercio de repuestos de motos que hoy se
-administra de forma manual. El negocio maneja varios miles de referencias —filtros, kits de
-transmisión, pastillas de freno, lubricantes, cubiertas y repuestos de motor— provenientes de
+administra de forma manual. El negocio maneja varios miles de referencias filtros, kits de
+transmisión, pastillas de freno, lubricantes, cubiertas y repuestos de motor provenientes de
 distintos proveedores, cada uno con su propia codificación, lo que genera diferencias entre el
 stock registrado y el stock físico.
 
@@ -42,12 +42,21 @@ Para poder usar el sistema se debe entrar a la terminal de windows y en la carpe
 3. Para el correcto funcionamiento se debe ejecutar en dos consolas por separado el siguiente comando en la carpeta de frontend y backend:
     ```
     npm run dev
+    ```
+
+4. La documentación de la API, con las pruebas de cada endpoint, está en Swagger: con el backend corriendo, abrir http://localhost:3001/api-docs (o http://localhost:3001/api/docs). Desde ahí se pueden probar los endpoints con "Try it out", después de iniciar sesión con `POST /sesion`.
+
+5. Para correr esas mismas pruebas de forma automática, en la carpeta de backend (usan una base temporal en memoria, no tocan la de desarrollo):
+    ```
+    npm test
+    ```
+
 ## Autor
 
-**Tomás Cárdenas** — Análisis, diseño y desarrollo del proyecto.
+**Tomás Cárdenas**  Análisis, diseño y desarrollo del proyecto.
 
 ---
 
 <div align="center">
-<sub>Proyecto Integrador · Release Diciembre 2026</sub>
+<sub>Proyecto Integrador · Release Noviembre 2026</sub>
 </div>

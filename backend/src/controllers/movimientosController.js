@@ -22,9 +22,10 @@ const obtenerMovimientos = async (req, res) => {
 
 // FRD, regla 7: la entrada suma la cantidad al stock del articulo y queda en
 // Movimientos (CA-2). Las dos cosas van juntas: si falla una, no queda
-// ninguna. increment no corre los hooks de Producto, asi que no se registra
-// ademas una modificacion. Responde con el stock que quedo, para que la
-// pantalla muestre de cuanto a cuanto paso.
+// ninguna, y el movimiento lleva el usuario de la sesion. increment no corre
+// los hooks de Producto, asi que no se registra ademas una modificacion.
+// Responde con el stock que quedo, para que la pantalla muestre de cuanto a
+// cuanto paso.
 const registrarEntrada = async (req, res) => {
   const { producto } = req;
   const { cantidad, referencia } = req.body;
@@ -40,7 +41,7 @@ const registrarEntrada = async (req, res) => {
         cantidad,
         referencia,
       },
-      { transaction }
+      { transaction, autor: req.sesion.autor() }
     );
   });
 

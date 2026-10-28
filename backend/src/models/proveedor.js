@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       // Cada alta, modificacion o baja queda en el registro de movimientos,
       // con la transaccion de la operacion. Una baja frenada por la clave
-      // foranea falla antes de llegar al hook y no registra nada.
+      // foranea falla antes de llegar al hook y no registra nada. El usuario
+      // que la hizo llega como autor en las opciones de la operacion.
       hooks: {
         afterCreate: (proveedor, opciones) => registrar('alta', proveedor, opciones),
         afterUpdate: (proveedor, opciones) => registrar('modificacion', proveedor, opciones),
@@ -41,10 +42,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  function registrar(tipo, proveedor, { transaction }) {
+  function registrar(tipo, proveedor, { transaction, autor }) {
     return sequelize.models.Movimiento.registrar(
       { tipo, entidad: 'proveedor', detalle: proveedor.nombre },
-      { transaction }
+      { transaction, autor }
     );
   }
 

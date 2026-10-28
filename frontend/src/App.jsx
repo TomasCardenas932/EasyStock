@@ -4,20 +4,23 @@ import Sidebar from './components/Sidebar.jsx'
 import RutaProtegida from './components/RutaProtegida.jsx'
 import ConPermiso from './components/ConPermiso.jsx'
 import Login from './pages/Login.jsx'
-import PANTALLAS from './pages/pantallas.js'
+import PANTALLAS, { MENU_USUARIO } from './pages/pantallas.js'
 import { useSesion } from './sesion/SesionContext.js'
 import './App.css'
 
 // Estructura de las pantallas con sesion: encabezado con el nombre del
-// empleado (FRD, CA-10), barra lateral y la pantalla elegida.
+// empleado (FRD, CA-10), barra lateral y la pantalla elegida. El menu del
+// usuario muestra solo las pantallas para las que el rol tiene permiso.
 function Principal() {
   const { usuario, permisos, cerrar } = useSesion()
+  const menu = MENU_USUARIO.filter((pantalla) => permisos.includes(pantalla.label))
 
   return (
     <div className="app">
       <Topbar
         appName="EasyStock"
         userName={`${usuario.nombre} ${usuario.apellido}`}
+        menu={menu}
         onCerrarSesion={cerrar}
       />
 
@@ -43,7 +46,7 @@ function App() {
           </RutaProtegida>
         }
       >
-        {PANTALLAS.map(({ id, label, path, componente: Pantalla }) => (
+        {[...PANTALLAS, ...MENU_USUARIO].map(({ id, label, path, componente: Pantalla }) => (
           <Route
             key={id}
             path={path}

@@ -1,4 +1,6 @@
 const { Router } = require('express');
+const { requierePermiso } = require('../middlewares/sesionMiddleware');
+const { USUARIOS } = require('../config/permisos');
 
 const {
   obtenerPermisos,
@@ -16,6 +18,9 @@ const {
 } = require('../middlewares/permisosMiddleware');
 
 const router = Router();
+
+// Los permisos se administran desde la pantalla de usuarios.
+router.use(requierePermiso(USUARIOS));
 
 // GET /api/permisos -> lista de permisos
 router.get('/', obtenerPermisos);

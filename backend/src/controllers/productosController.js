@@ -30,20 +30,25 @@ const obtenerProdCodigo = async (req, res) => {
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
+// El usuario de la sesion queda en el movimiento de cada operacion.
 const crearProducto = async (req, res) => {
   const producto = await sequelize.transaction((transaction) =>
-    Producto.create(req.body, { transaction })
+    Producto.create(req.body, { transaction, autor: req.sesion.autor() })
   );
   res.status(201).json(await producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const modificarProducto = async (req, res) => {
-  await sequelize.transaction((transaction) => req.producto.update(req.body, { transaction }));
+  await sequelize.transaction((transaction) =>
+    req.producto.update(req.body, { transaction, autor: req.sesion.autor() })
+  );
   res.json(await req.producto.reload({ include: INCLUIR_PROVEEDOR }));
 };
 
 const bajaProducto = async (req, res) => {
-  await sequelize.transaction((transaction) => req.producto.destroy({ transaction }));
+  await sequelize.transaction((transaction) =>
+    req.producto.destroy({ transaction, autor: req.sesion.autor() })
+  );
   res.status(204).end();
 };
 

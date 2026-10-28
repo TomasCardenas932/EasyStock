@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
       return coincide(contrasena, this.contrasena);
     }
 
+    // Como queda registrado en las ventas y los movimientos que hace.
+    autor() {
+      return { id: this.id, nombre: `${this.nombre} ${this.apellido}` };
+    }
+
     // El hash no sale nunca en las respuestas, ni siquiera recien creado el
     // usuario.
     toJSON() {

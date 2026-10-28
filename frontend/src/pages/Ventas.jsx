@@ -15,6 +15,8 @@ function Ventas() {
   const [busqueda, setBusqueda] = useState('')
   const [busquedaAplicada, setBusquedaAplicada] = useState('')
   const [seleccionadoId, setSeleccionadoId] = useState(null)
+  // La venta en curso vive solo en esta pantalla: cerrar la sesion la descarta
+  // sin pedir confirmacion (regla 4).
   const [agregados, setAgregados] = useState([])
   // Articulo que espera confirmacion y cantidad antes de sumarse a la venta.
   const [porAgregar, setPorAgregar] = useState(null)

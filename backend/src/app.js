@@ -9,6 +9,7 @@ const usuariosRouter = require('./routes/usuarios');
 const rolesRouter = require('./routes/roles');
 const permisosRouter = require('./routes/permisos');
 const sesionRouter = require('./routes/sesion');
+const docsRouter = require('./routes/docs');
 const { requiereSesion } = require('./middlewares/sesionMiddleware');
 const ErrorHttp = require('./Excepciones/ErrorHttp');
 
@@ -17,6 +18,10 @@ const app = express();
 app.use(express.json());
 
 app.use('/api/sesion', sesionRouter);
+
+// Documentacion de la API (Swagger UI), en /api/docs y en /api-docs. Se ve sin
+// sesion; para probar los endpoints hay que iniciarla desde la propia pagina.
+app.use(['/api/docs', '/api-docs'], docsRouter);
 
 // Todo lo que sigue necesita una sesion iniciada (FRD, regla 15).
 app.use('/api', requiereSesion);

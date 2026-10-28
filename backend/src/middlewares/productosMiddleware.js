@@ -2,26 +2,41 @@ const { Op } = require('sequelize');
 const { Producto } = require('../models');
 const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { validar } = require('./validar');
-const { esquemaCodigo, esquemaAlta, esquemaModificacion } = require('../schemas/productosSchema');
+const {
+  esquemaCodigo,
+  esquemaProveedorDelCodigo,
+  esquemaAlta,
+  esquemaModificacion,
+} = require('../schemas/productosSchema');
 
-const validarCodigo = validar({ params: esquemaCodigo });
+const validarCodigo = validar({ params: esquemaCodigo, query: esquemaProveedorDelCodigo });
 
 const validarAlta = validar({ body: esquemaAlta });
 
 const validarModificacion = validar({ body: esquemaModificacion });
 
-// Busca el articulo de :codigo y lo deja en req.producto.
+// Busca el articulo de :codigo y lo deja en req.producto. Si el codigo se
+// repite entre proveedores (BRD, regla 13), ?proveedorId= indica cual es.
 const cargarProducto = async (req, res, next) => {
   const { codigo } = req.params;
+  const conProveedor = req.query.proveedorId !== undefined;
+  const proveedorId = req.query.proveedorId === 'ninguno' ? null : req.query.proveedorId;
   const productos = await Producto.findAll({
-    where: { codigo },
+    where: { codigo, ...(conProveedor && { proveedorId }) },
     include: { association: 'proveedor', attributes: ['nombre'] },
   });
 
   if (productos.length === 0) {
-    throw new ErrorHttp(404, `No existe un producto con el codigo ${codigo}`);
+    throw new ErrorHttp(
+      404,
+      conProveedor
+        ? `No existe un producto con el codigo ${codigo} para ese proveedor`
+        : `No existe un producto con el codigo ${codigo}`
+    );
   }
 
+  // Sin ?proveedorId= no se opera sobre ninguno: se devuelven los candidatos
+  // para que la pantalla pida elegir el proveedor.
   if (productos.length > 1) {
     throw new ErrorHttp(
       409,

@@ -89,7 +89,8 @@ module.exports = (sequelize, DataTypes) => {
       // aca (decrement no corre hooks): lo registra la venta.
       // La cantidad es el stock que suma o resta cada operacion: el inicial en
       // el alta, la diferencia en la modificacion (previous todavia tiene el
-      // valor anterior) y el que quedaba en la baja.
+      // valor anterior) y el que quedaba en la baja. El usuario que la hizo
+      // llega como autor en las opciones de la operacion.
       hooks: {
         afterCreate: (producto, opciones) =>
           registrar('alta', producto, producto.stock, opciones),
@@ -101,10 +102,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  function registrar(tipo, producto, cantidad, { transaction }) {
+  function registrar(tipo, producto, cantidad, { transaction, autor }) {
     return sequelize.models.Movimiento.registrar(
       { tipo, entidad: 'producto', detalle: `${producto.codigo} - ${producto.nombre}`, cantidad },
-      { transaction }
+      { transaction, autor }
     );
   }
 

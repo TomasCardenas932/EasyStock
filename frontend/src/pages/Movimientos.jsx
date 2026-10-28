@@ -33,7 +33,7 @@ const formatoCantidad = (cantidad) => {
 }
 
 // Registro de operaciones: el backend genera un movimiento en cada alta, baja,
-// modificacion o venta. Aca solo se cargan las entradas de stock (FRD,
+// modificacion o venta, con el usuario que la hizo (BRD, CB-07). Aca solo se cargan las entradas de stock (FRD,
 // SC004.1). Vienen ordenados del mas nuevo al mas viejo.
 function Movimientos() {
   const [movimientos, setMovimientos] = useState([])
@@ -160,6 +160,7 @@ function Movimientos() {
             <thead>
               <tr>
                 <th>Fecha y hora</th>
+                <th>Usuario</th>
                 <th>Tipo</th>
                 <th>Identificador</th>
                 <th>Entidad</th>
@@ -171,10 +172,12 @@ function Movimientos() {
               {movimientos.map((movimiento) => (
                 <tr key={movimiento.id}>
                   <td className="num">{formatoFecha.format(new Date(movimiento.fecha))}</td>
+                  {/* Los movimientos anteriores a que se registrara el usuario no lo tienen. */}
+                  <td>{movimiento.usuarioNombre ?? '-'}</td>
                   <td>{TIPOS[movimiento.tipo] ?? movimiento.tipo}</td>
                   <td className="mono">{movimiento.identificador}</td>
                   <td>{ENTIDADES[movimiento.entidad] ?? movimiento.entidad}</td>
-                  <td>
+                  <td className="movimiento-detalle">
                     {movimiento.detalle}
                     {movimiento.referencia && (
                       <span className="movimiento-referencia">Ref: {movimiento.referencia}</span>

@@ -45,21 +45,26 @@ const obtenerProvNombre = async (req, res) => {
 
 // Alta, modificacion y baja van en una transaccion: el hook del modelo
 // registra el movimiento dentro de ella, asi la operacion y su movimiento se
-// guardan juntos o no se guarda ninguno.
+// guardan juntos o no se guarda ninguno. El movimiento lleva el usuario de la
+// sesion.
 const crearProveedor = async (req, res) => {
   const proveedor = await sequelize.transaction((transaction) =>
-    Proveedor.create(req.body, { transaction })
+    Proveedor.create(req.body, { transaction, autor: req.sesion.autor() })
   );
   res.status(201).json(await proveedor.reload({ attributes: ATRIBUTOS }));
 }
 
 const modificarProveedor = async (req, res) => {
-  await sequelize.transaction((transaction) => req.proveedor.update(req.body, { transaction }));
+  await sequelize.transaction((transaction) =>
+    req.proveedor.update(req.body, { transaction, autor: req.sesion.autor() })
+  );
   res.json(await req.proveedor.reload({ attributes: ATRIBUTOS }));
 }
 
 const bajaProveedor = async (req, res) => {
-  await sequelize.transaction((transaction) => req.proveedor.destroy({ transaction }));
+  await sequelize.transaction((transaction) =>
+    req.proveedor.destroy({ transaction, autor: req.sesion.autor() })
+  );
   res.status(204).end();
 }
 

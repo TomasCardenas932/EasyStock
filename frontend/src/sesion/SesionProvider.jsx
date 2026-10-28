@@ -4,11 +4,7 @@ import { cerrarSesion, iniciarSesion, obtenerSesion } from '../api/sesion.js'
 import { SesionContext } from './SesionContext.js'
 
 function SesionProvider({ children }) {
-  // Con un token guardado (por ejemplo, al recargar la pagina) se pregunta al
-  // backend de quien es antes de decidir si mostrar el login.
   const [usuario, setUsuario] = useState(() => (hayToken() ? undefined : null))
-  // Al cerrar la sesion a mano no se recuerda la pantalla: el proximo ingreso
-  // arranca en el Dashboard. Si la sesion vence, se vuelve a donde se estaba.
   const [cerradaAMano, setCerradaAMano] = useState(false)
 
   useEffect(() => {

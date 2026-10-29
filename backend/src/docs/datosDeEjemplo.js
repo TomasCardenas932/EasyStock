@@ -82,6 +82,7 @@ async function cargarDatosDeEjemplo() {
   const martina = await Usuario.create({
     nombre: 'Martina',
     apellido: 'Gomez',
+    email: 'martina.gomez@example.com',
     telefono: '11 45128730',
     contrasena: 'demo-martina',
     rolId: admin.id,
@@ -89,6 +90,7 @@ async function cargarDatosDeEjemplo() {
   const juan = await Usuario.create({
     nombre: 'Juan',
     apellido: 'Lopez',
+    email: 'juan.lopez@example.com',
     telefono: '11 52934417',
     contrasena: 'demo-juan',
     rolId: empleado.id,
@@ -96,6 +98,7 @@ async function cargarDatosDeEjemplo() {
   await Usuario.create({
     nombre: 'Sofia',
     apellido: 'Paz',
+    email: 'sofia.paz@example.com',
     telefono: '11 40001234',
     contrasena: 'demo-sofia',
     rolId: null,

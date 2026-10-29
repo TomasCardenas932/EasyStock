@@ -46,9 +46,9 @@ const ESQUEMAS = {
 
   Credenciales: {
     type: 'object',
-    required: ['nombre', 'contrasena'],
+    required: ['email', 'contrasena'],
     properties: {
-      nombre: texto('Nombre del usuario, sin distinguir mayusculas'),
+      email: { type: 'string', format: 'email', description: 'Sin distinguir mayusculas' },
       contrasena: { type: 'string', format: 'password' },
     },
   },
@@ -229,6 +229,7 @@ const ESQUEMAS = {
       id: entero(),
       nombre: texto(),
       apellido: texto(),
+      email: { type: 'string', format: 'email' },
       telefono: { type: 'string', example: '11 12345678' },
       rolId: enteroOpcional(),
       ...FECHAS,
@@ -237,10 +238,11 @@ const ESQUEMAS = {
   },
   UsuarioAlta: {
     type: 'object',
-    required: ['nombre', 'apellido', 'telefono', 'contrasena'],
+    required: ['nombre', 'apellido', 'email', 'telefono', 'contrasena'],
     properties: {
       nombre: texto(),
       apellido: texto(),
+      email: { type: 'string', format: 'email', description: 'No se puede repetir' },
       telefono: { type: 'string', pattern: '^\\d{2} \\d{8}$', example: '11 12345678' },
       contrasena: { type: 'string', format: 'password' },
       rolId: enteroOpcional('null (o vacio) deja al usuario sin rol'),
@@ -252,6 +254,7 @@ const ESQUEMAS = {
     properties: {
       nombre: texto(),
       apellido: texto(),
+      email: { type: 'string', format: 'email', description: 'No se puede repetir' },
       telefono: { type: 'string', pattern: '^\\d{2} \\d{8}$' },
       contrasena: { type: 'string', format: 'password' },
       rolId: enteroOpcional(),

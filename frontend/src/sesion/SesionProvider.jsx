@@ -29,8 +29,8 @@ function SesionProvider({ children }) {
       // Nombres de los permisos del rol; sin rol no hay ninguno.
       permisos: usuario?.rol?.permisos.map((permiso) => permiso.nombre) ?? [],
       cerradaAMano,
-      iniciar: async (nombre, contrasena) => {
-        setUsuario(await iniciarSesion(nombre, contrasena))
+      iniciar: async (email, contrasena) => {
+        setUsuario(await iniciarSesion(email, contrasena))
         setCerradaAMano(false)
       },
       cerrar: () => {

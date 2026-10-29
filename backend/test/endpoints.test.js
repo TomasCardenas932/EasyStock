@@ -27,9 +27,9 @@ const SEEDERS = ['20261022140000-admin-inicial.js', '20261026130000-rol-empleado
 // Usuario de cada sesion de las pruebas: Tomas es el del seeder admin-inicial y
 // los otros dos, de los datos de ejemplo.
 const CREDENCIALES = {
-  admin: { nombre: 'Tomas', contrasena: '123456' },
-  empleado: { nombre: 'Juan', contrasena: 'demo-juan' },
-  'sin rol': { nombre: 'Sofia', contrasena: 'demo-sofia' },
+  admin: { email: 'tomascardenas932@gmail.com', contrasena: '123456' },
+  empleado: { email: 'juan.lopez@example.com', contrasena: 'demo-juan' },
+  'sin rol': { email: 'sofia.paz@example.com', contrasena: 'demo-sofia' },
 };
 
 // Campos que cambian en cada corrida: se comparan solo si estan.

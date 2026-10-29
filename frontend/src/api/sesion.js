@@ -4,8 +4,8 @@ const BASE = '/api/sesion'
 
 // Devuelve el usuario, con su rol y permisos. El token queda guardado y viaja
 // en todas las llamadas siguientes.
-const iniciarSesion = async (nombre, contrasena) => {
-  const { token, usuario } = await request(BASE, { method: 'POST', body: { nombre, contrasena } })
+const iniciarSesion = async (email, contrasena) => {
+  const { token, usuario } = await request(BASE, { method: 'POST', body: { email, contrasena } })
   guardarToken(token)
   return usuario
 }

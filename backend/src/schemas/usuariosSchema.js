@@ -9,6 +9,12 @@ const texto = (etiqueta) => Joi.string().trim().label(etiqueta);
 const CAMPOS = {
   nombre: texto('El nombre').required(),
   apellido: texto('El apellido').required(),
+  // En minusculas, como lo guarda el modelo Usuario.
+  email: texto('El email')
+    .lowercase()
+    .email()
+    .required()
+    .messages({ 'string.email': '{#label} no es valido' }),
   telefono: texto('El telefono')
     .pattern(FORMATO_TELEFONO)
     .required()
@@ -45,7 +51,7 @@ const esquemaAlta = Joi.object(CAMPOS);
 // En la modificacion viajan solo los campos que cambian. Sin contrasena, se
 // conserva la que tenia.
 const esquemaModificacion = esquemaAlta.fork(
-  ['nombre', 'apellido', 'telefono', 'contrasena'],
+  ['nombre', 'apellido', 'email', 'telefono', 'contrasena'],
   (campo) => campo.optional()
 );
 

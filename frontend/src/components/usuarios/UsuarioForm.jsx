@@ -7,12 +7,19 @@ import '../abm.css'
 // espacio y 8 digitos de numero.
 const FORMATO_TELEFONO = /^\d{2} \d{8}$/
 
-const CAMPOS = ['nombre', 'apellido', 'telefono', 'rolId', 'contrasena']
+// Algo, una arroba y un dominio con punto. El backend hace la validacion
+// completa.
+const FORMATO_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const AYUDA_EMAIL = 'Es con el que inicia sesion; no puede ser el de otro usuario.'
+
+const CAMPOS = ['nombre', 'apellido', 'email', 'telefono', 'rolId', 'contrasena']
 
 function valoresIniciales(usuario) {
   return {
     nombre: usuario?.nombre ?? '',
     apellido: usuario?.apellido ?? '',
+    email: usuario?.email ?? '',
     telefono: usuario?.telefono ?? '',
     rolId: usuario?.rolId == null ? '' : String(usuario.rolId),
     contrasena: '',
@@ -24,6 +31,8 @@ function validar(valores, { contrasenaOpcional }) {
   const errores = {}
   if (!valores.nombre.trim()) errores.nombre = 'El nombre es obligatorio'
   if (!valores.apellido.trim()) errores.apellido = 'El apellido es obligatorio'
+  if (!valores.email.trim()) errores.email = 'El email es obligatorio'
+  else if (!FORMATO_EMAIL.test(valores.email.trim())) errores.email = 'El email no es valido'
   if (!FORMATO_TELEFONO.test(valores.telefono.trim())) {
     errores.telefono = 'El telefono debe tener el formato "11 12345678"'
   }
@@ -37,6 +46,7 @@ function aDatos(valores, { conRol }) {
   return {
     nombre: valores.nombre.trim(),
     apellido: valores.apellido.trim(),
+    email: valores.email.trim(),
     telefono: valores.telefono.trim(),
     ...(conRol && { rolId: valores.rolId === '' ? null : Number(valores.rolId) }),
     ...(valores.contrasena && { contrasena: valores.contrasena }),
@@ -172,6 +182,18 @@ function UsuarioForm({ usuario, rolFijo = false, textoGuardar, onGuardar, onCanc
             disabled={guardando}
           />
           {nota('telefono')}
+        </div>
+
+        <div className="form-campo span-6">
+          <label htmlFor="usuario-email">Email</label>
+          <input
+            {...campo('email', AYUDA_EMAIL)}
+            type="email"
+            autoComplete="off"
+            placeholder="Ej: martina.gomez@gmail.com"
+            disabled={guardando}
+          />
+          {nota('email', AYUDA_EMAIL)}
         </div>
 
         <div className="form-campo span-2">

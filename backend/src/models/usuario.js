@@ -4,6 +4,8 @@ const { hashear, coincide } = require('../utils/contrasenas');
 // Codigo de area de 2 digitos, un espacio y 8 digitos de numero: "11 12345678".
 const FORMATO_TELEFONO = /^\d{2} \d{8}$/;
 
+const INDICE_EMAIL = 'usuarios_email_unico';
+
 const textoObligatorio = (msg) => ({
   notNull: { msg },
   notEmpty: { msg },
@@ -46,6 +48,23 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: textoObligatorio('El apellido es obligatorio'),
+      },
+      email: {
+        // Es con lo que se inicia sesion. Se guarda en minusculas, asi la
+        // busqueda del inicio de sesion no distingue mayusculas.
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: {
+          name: INDICE_EMAIL,
+          msg: 'Ya existe un usuario con ese email',
+        },
+        validate: {
+          ...textoObligatorio('El email es obligatorio'),
+          isEmail: { msg: 'El email no es valido' },
+        },
+        set(email) {
+          this.setDataValue('email', typeof email === 'string' ? email.trim().toLowerCase() : email);
+        },
       },
       telefono: {
         // Se guarda como texto para conservar el espacio entre el codigo de

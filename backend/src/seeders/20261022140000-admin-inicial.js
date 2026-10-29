@@ -9,7 +9,12 @@ const ROL = 'admin';
 
 // Usuario para el primer ingreso al sistema. La contrasena es de prueba:
 // cambiala antes de usar el sistema con datos reales.
-const USUARIO = { nombre: 'Tomas', apellido: 'Cardenas', telefono: '11 61376740' };
+const USUARIO = {
+  nombre: 'Tomas',
+  apellido: 'Cardenas',
+  email: 'tomascardenas932@gmail.com',
+  telefono: '11 61376740',
+};
 const CONTRASENA = '123456';
 
 /** @type {import('sequelize-cli').Migration} */

@@ -5,11 +5,11 @@ import { useSesion } from '../sesion/SesionContext.js'
 import '../components/abm.css'
 import './Login.css'
 
-const VACIO = { nombre: '', contrasena: '' }
+const VACIO = { email: '', contrasena: '' }
 
-function validar({ nombre, contrasena }) {
+function validar({ email, contrasena }) {
   const errores = {}
-  if (!nombre.trim()) errores.nombre = 'Ingresa tu usuario'
+  if (!email.trim()) errores.email = 'Ingresa tu email'
   if (!contrasena) errores.contrasena = 'Ingresa tu contrasena'
   return errores
 }
@@ -45,7 +45,7 @@ function Login() {
 
     setEnviando(true)
     try {
-      await iniciar(valores.nombre.trim(), valores.contrasena)
+      await iniciar(valores.email.trim(), valores.contrasena)
     } catch (err) {
       // SC000.1: se avisa sin decir cual de los dos datos fallo y se borra la
       // contrasena para volver a escribirla.
@@ -64,7 +64,7 @@ function Login() {
         <section className="login-tarjeta" aria-labelledby="login-titulo">
           <header className="login-encabezado">
             <h1 id="login-titulo">Iniciar sesion</h1>
-            <p>Ingresa con tu usuario y contrasena para ver el estado del inventario.</p>
+            <p>Ingresa con tu email y contrasena para ver el estado del inventario.</p>
           </header>
 
           <form className="abm-form login-form" onSubmit={handleSubmit} noValidate>
@@ -75,21 +75,21 @@ function Login() {
             )}
 
             <div className="form-campo">
-              <label htmlFor="login-nombre">Usuario</label>
+              <label htmlFor="login-email">Email</label>
               <input
-                id="login-nombre"
-                name="nombre"
-                type="text"
+                id="login-email"
+                name="email"
+                type="email"
                 autoComplete="username"
                 autoFocus
-                value={valores.nombre}
+                value={valores.email}
                 onChange={handleChange}
-                aria-invalid={errores.nombre ? true : undefined}
-                aria-describedby={errores.nombre ? 'login-nombre-error' : undefined}
+                aria-invalid={errores.email ? true : undefined}
+                aria-describedby={errores.email ? 'login-email-error' : undefined}
               />
-              {errores.nombre && (
-                <span id="login-nombre-error" className="form-error">
-                  {errores.nombre}
+              {errores.email && (
+                <span id="login-email-error" className="form-error">
+                  {errores.email}
                 </span>
               )}
             </div>

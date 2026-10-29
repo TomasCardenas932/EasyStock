@@ -135,6 +135,7 @@ function Usuarios() {
               <tr>
                 <th>Apellido</th>
                 <th>Nombre</th>
+                <th>Email</th>
                 <th>Telefono</th>
                 <th>Rol</th>
                 <th>
@@ -153,6 +154,7 @@ function Usuarios() {
                       {usuario.nombre}
                       {propio && <span className="usuarios-propio">(vos)</span>}
                     </td>
+                    <td>{usuario.email}</td>
                     <td>{usuario.telefono}</td>
                     <td>{usuario.rol?.nombre ?? 'Sin rol'}</td>
                     <td>

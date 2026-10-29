@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const { col, fn, where } = require('sequelize');
 const { Usuario, Rol, Permiso } = require('../models');
 const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { secreto } = require('../config/sesion');
@@ -7,7 +6,7 @@ const { validar } = require('./validar');
 const { esquemaCredenciales } = require('../schemas/sesionSchema');
 
 // FRD, regla 14: se rechaza el ingreso sin indicar cual de los dos datos fallo.
-const CREDENCIALES_INVALIDAS = 'Usuario o contrasena incorrectos.';
+const CREDENCIALES_INVALIDAS = 'Email o contrasena incorrectos.';
 
 const SIN_SESION = 'Tenes que iniciar sesion para continuar';
 
@@ -21,23 +20,19 @@ const INCLUIR_PERMISOS = {
 
 const validarCredenciales = validar({ body: esquemaCredenciales });
 
-// Busca al usuario por nombre, sin distinguir mayusculas, y lo deja en
-// req.usuario si la contrasena coincide. El nombre no es unico: se prueba la
-// contrasena con cada usuario que se llame asi.
+// Busca al usuario por email y lo deja en req.usuario si la contrasena
+// coincide. El email es unico y llega en minusculas, como se guarda: no
+// distingue mayusculas.
 const verificarCredenciales = async (req, res, next) => {
-  const { nombre, contrasena } = req.body;
-  const candidatos = await Usuario.scope('conContrasena').findAll({
-    where: where(fn('lower', col('nombre')), nombre.toLowerCase()),
-  });
+  const { email, contrasena } = req.body;
+  const usuario = await Usuario.scope('conContrasena').findOne({ where: { email } });
 
-  for (const candidato of candidatos) {
-    if (await candidato.verificarContrasena(contrasena)) {
-      req.usuario = candidato;
-      return next();
-    }
+  if (!usuario || !(await usuario.verificarContrasena(contrasena))) {
+    throw new ErrorHttp(401, CREDENCIALES_INVALIDAS);
   }
 
-  throw new ErrorHttp(401, CREDENCIALES_INVALIDAS);
+  req.usuario = usuario;
+  next();
 };
 
 // FRD, regla 15: sin sesion no se accede a nada. El token viaja en el

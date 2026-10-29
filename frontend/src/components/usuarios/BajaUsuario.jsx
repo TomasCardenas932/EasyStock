@@ -36,6 +36,8 @@ function BajaUsuario({ usuario, onClose, onExito }) {
           <dd>
             {usuario.nombre} {usuario.apellido}
           </dd>
+          <dt>Email</dt>
+          <dd>{usuario.email}</dd>
           <dt>Telefono</dt>
           <dd>{usuario.telefono}</dd>
           <dt>Rol</dt>

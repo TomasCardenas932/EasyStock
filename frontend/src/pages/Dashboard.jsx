@@ -14,7 +14,7 @@ const formatoFecha = new Intl.DateTimeFormat('es-AR', {
   hourCycle: 'h23',
 })
 
-// "Sin stock" se pinta en negro cuando hay articulos en cero: es lo primero
+// "Sin stock" se pinta en sandy-brown cuando hay articulos en cero: es lo primero
 // que hay que reponer (FRD, regla 1).
 const RECUADROS = [
   { clave: 'articulos', texto: 'Articulos cargados' },

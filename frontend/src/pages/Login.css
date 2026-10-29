@@ -19,19 +19,19 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.08);
+  box-shadow: 0 12px 32px rgb(var(--sombra) / 0.08);
   overflow: hidden;
 }
 
 .login-encabezado {
   padding: 32px 40px;
-  background: var(--gray-1000);
+  background: var(--accent-strong);
 }
 
 .login-encabezado h1 {
   margin: 0 0 6px;
   font-size: 26px;
-  color: var(--gray-0);
+  color: var(--on-accent);
 }
 
 .login-encabezado p {
@@ -63,7 +63,7 @@
   padding: 4px 8px;
   font: inherit;
   font-size: 14px;
-  color: var(--gray-700);
+  color: var(--text-soft);
   text-decoration: underline;
   background: none;
   border: 0;
@@ -72,11 +72,11 @@
 }
 
 .login-mostrar:hover {
-  color: var(--gray-1000);
+  color: var(--accent-text);
 }
 
 .login-mostrar:focus-visible {
-  outline: 2px solid var(--gray-1000);
+  outline: 2px solid var(--focus);
   outline-offset: 0;
 }
 
@@ -89,7 +89,7 @@
 .login-pie {
   padding: 18px 40px;
   border-top: 1px solid var(--border);
-  background: var(--gray-50);
+  background: var(--surface-alt);
   font-size: 14px;
   color: var(--text-muted);
 }

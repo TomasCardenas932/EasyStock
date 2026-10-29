@@ -1,28 +1,76 @@
 :root {
-  /* Escala de grises: unica paleta de la app */
-  --gray-0: #ffffff;
-  --gray-50: #fafafa;
-  --gray-100: #f4f4f4;
-  --gray-200: #e6e6e6;
-  --gray-300: #d4d4d4;
-  --gray-400: #a3a3a3;
-  --gray-500: #737373;
-  --gray-600: #525252;
-  --gray-700: #3f3f3f;
-  --gray-800: #262626;
-  --gray-900: #171717;
-  --gray-1000: #000000;
+  /* Paleta de la app */
+  --sandy-brown: #f19953;
+  --copper: #c47335;
+  --deep-walnut: #56351e;
+  --stormy-teal: #0d5d56;
+  --mint-leaf: #21d19f;
+  /* Base del modo oscuro */
+  --space-cadet: #27233a;
 
-  /* Roles semanticos */
+  /* Tonos derivados de la paleta. El texto blanco no se lee sobre copper
+     ni sobre mint-leaf: para botones y errores van versiones mas oscuras. */
+  --teal-600: #127d74;
+  --teal-800: #0a4742;
+  --mint-50: #ecfaf5;
+  --mint-100: #d3f6eb;
+  --mint-200: #a6eed8;
+  --copper-700: #9c5926;
+  --sandy-50: #fdf1e7;
+
+  /* Grises con un toque de deep-walnut: fondos, bordes y textos */
+  --gray-0: #ffffff;
+  --gray-50: #f7f5f3;
+  --gray-100: #efebe7;
+  --gray-200: #e3ddd7;
+  --gray-300: #cfc6be;
+  --gray-400: #a39588;
+  --gray-500: #76665a;
+  --gray-600: #5e4f44;
+  --gray-700: #4a3d33;
+  --gray-800: #3a2d23;
+  --gray-900: #2e2118;
+
+  /* Roles semanticos. Los componentes usan solo estos (y la paleta en las
+     barras oscuras, que son iguales en los dos modos): el modo oscuro los
+     redefine abajo. */
   --bg: var(--gray-50);
   --surface: var(--gray-0);
+  --surface-alt: var(--gray-50);
+  --surface-muted: var(--gray-100);
   --text: var(--gray-900);
+  --text-soft: var(--gray-700);
   --text-muted: var(--gray-500);
+  --text-placeholder: var(--gray-400);
   --border: var(--gray-200);
-  --topbar-bg: var(--gray-1000);
+  --border-strong: var(--gray-300);
+  --border-hover: var(--gray-500);
+
+  /* accent: botones y lo seleccionado. accent-strong: barras y encabezados
+     oscuros (topbar, tablas, modales). on-accent: texto sobre esos fondos.
+     accent-indicator: la barra de lo seleccionado. */
+  --accent: var(--teal-600);
+  --accent-hover: var(--stormy-teal);
+  --accent-soft: var(--mint-100);
+  --accent-faint: var(--mint-50);
+  --accent-text: var(--stormy-teal);
+  --accent-indicator: var(--accent);
+  --on-accent: var(--gray-0);
+  --focus: var(--accent);
+  --accent-strong: var(--stormy-teal);
+  --danger: var(--copper-700);
+  --danger-soft: var(--sandy-50);
+  --alerta: var(--sandy-brown);
+  --alerta-text: var(--deep-walnut);
+
+  /* Componentes RGB de gray-900, para sombras y fondos con transparencia */
+  --sombra: 46 33 24;
+
+  --topbar-bg: var(--accent-strong);
   --topbar-text: var(--gray-0);
-  --topbar-text-muted: var(--gray-400);
-  --topbar-border: var(--gray-800);
+  --topbar-text-muted: var(--mint-200);
+  --topbar-border: var(--teal-800);
+  --topbar-brand: var(--mint-leaf);
 
   --topbar-height: 60px;
   --sidebar-width: 220px;
@@ -37,6 +85,38 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Modo oscuro: lo elige el switch del topbar (ver tema.js). Las barras
+   en stormy-teal y los botones no cambian. Tarjetas, tablas y sidebar van en
+   space-cadet sobre un fondo mas oscuro del mismo tono, y lo seleccionado en
+   stormy-teal con la barra y el foco en mint-leaf (teal-600 no llega al
+   contraste sobre space-cadet). */
+:root[data-tema='oscuro'] {
+  color-scheme: dark;
+
+  --bg: #1c192b;
+  --surface: var(--space-cadet);
+  --surface-alt: #221f33;
+  --surface-muted: #332e4a;
+  --text: #eeecf4;
+  --text-soft: #d3cfe0;
+  --text-muted: #a9a3c0;
+  --text-placeholder: #7d7799;
+  --border: #3b3654;
+  --border-strong: #5a5378;
+  --border-hover: #7d7799;
+
+  --accent-soft: var(--stormy-teal);
+  --accent-faint: #1a3a45;
+  --accent-text: var(--mint-200);
+  --accent-indicator: var(--mint-leaf);
+  --focus: var(--mint-leaf);
+  --danger: var(--sandy-brown);
+  --danger-soft: #40293a;
+
+  /* Componentes RGB de un space-cadet casi negro */
+  --sombra: 10 8 20;
 }
 
 * {
@@ -80,7 +160,7 @@ p {
 }
 
 .btn:focus-visible {
-  outline: 2px solid var(--gray-1000);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 
@@ -90,24 +170,25 @@ p {
 }
 
 .btn-primario {
-  background: var(--gray-1000);
-  border-color: var(--gray-1000);
-  color: var(--gray-0);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
 }
 
 .btn-primario:not(:disabled):hover {
-  background: var(--gray-800);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .btn-secundario {
-  background: var(--gray-0);
-  border-color: var(--gray-300);
-  color: var(--gray-900);
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .btn-secundario:not(:disabled):hover {
-  background: var(--gray-100);
-  border-color: var(--gray-500);
+  background: var(--surface-muted);
+  border-color: var(--border-hover);
 }
 
 /* Texto visible solo para lectores de pantalla */

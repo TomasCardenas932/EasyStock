@@ -5,7 +5,7 @@
 }
 
 .form-descripcion {
-  color: var(--gray-700);
+  color: var(--text-soft);
 }
 
 .form-grid {
@@ -36,7 +36,7 @@
 .form-campo label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--text);
 }
 
 .form-opcional {
@@ -51,39 +51,39 @@
   padding: 10px 12px;
   font: inherit;
   font-size: 15px;
-  color: var(--gray-900);
-  background: var(--gray-0);
-  border: 1px solid var(--gray-300);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
 }
 
 .form-campo input::placeholder {
-  color: var(--gray-400);
+  color: var(--text-placeholder);
 }
 
 .form-campo input:focus-visible,
 .form-campo select:focus-visible {
-  outline: 2px solid var(--gray-1000);
+  outline: 2px solid var(--focus);
   outline-offset: -1px;
-  border-color: var(--gray-1000);
+  border-color: var(--focus);
 }
 
 .form-campo input:disabled,
 .form-campo select:disabled {
-  background: var(--gray-100);
-  color: var(--gray-500);
+  background: var(--surface-muted);
+  color: var(--text-muted);
 }
 
 .form-campo input[aria-invalid='true'],
 .form-campo select[aria-invalid='true'] {
-  border: 2px solid var(--gray-1000);
+  border: 2px solid var(--danger);
   padding: 9px 11px;
 }
 
 .form-error {
   font-size: 13px;
   font-weight: 600;
-  color: var(--gray-1000);
+  color: var(--danger);
 }
 
 .form-error::before {
@@ -99,10 +99,15 @@
 .form-exito,
 .baja-advertencia {
   padding: 12px 14px;
-  border-left: 4px solid var(--gray-1000);
-  background: var(--gray-100);
-  color: var(--gray-900);
+  border-left: 4px solid var(--danger);
+  background: var(--danger-soft);
+  color: var(--text);
   font-size: 14px;
+}
+
+.form-exito {
+  border-left-color: var(--accent-indicator);
+  background: var(--accent-soft);
 }
 
 .form-error-general,
@@ -125,7 +130,7 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--gray-50);
+  background: var(--surface-alt);
 }
 
 .abm-resumen dt {
@@ -136,7 +141,7 @@
 .abm-resumen dd {
   margin: 0;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--text);
   overflow-wrap: anywhere;
 }
 

@@ -36,13 +36,13 @@
 }
 
 .dashboard-recuadro.is-destacado {
-  background: var(--gray-1000);
-  border-color: var(--gray-1000);
+  background: var(--alerta);
+  border-color: var(--alerta);
 }
 
 .dashboard-recuadro.is-destacado .dashboard-recuadro-valor,
 .dashboard-recuadro.is-destacado .dashboard-recuadro-texto {
-  color: var(--gray-0);
+  color: var(--alerta-text);
 }
 
 /* Reposicion ocupa tres cuartos del ancho y los articulos sin precio el
@@ -119,15 +119,15 @@
   color: var(--text-muted);
 }
 
-/* La tabla del panel lleva el encabezado claro: el negro queda para las
-   tablas de las pantallas de ABM. */
+/* La tabla del panel lleva el encabezado claro: el stormy-teal queda para
+   las tablas de las pantallas de ABM. */
 .dashboard-tabla {
   overflow-x: auto;
 }
 
 .dashboard-tabla thead th {
-  background: var(--gray-100);
-  color: var(--gray-700);
+  background: var(--accent-faint);
+  color: var(--accent-text);
 }
 
 .dashboard-tabla th:first-child,
@@ -155,17 +155,18 @@
 .estado-stock {
   display: inline-block;
   padding: 2px 10px;
-  border: 1px solid var(--gray-1000);
+  border: 1px solid var(--danger);
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--gray-1000);
-  background: var(--gray-0);
+  color: var(--danger);
+  background: var(--surface);
 }
 
 .estado-stock.is-sinStock {
-  color: var(--gray-0);
-  background: var(--gray-1000);
+  color: var(--alerta-text);
+  background: var(--alerta);
+  border-color: var(--alerta);
 }
 
 @media (max-width: 1100px) {

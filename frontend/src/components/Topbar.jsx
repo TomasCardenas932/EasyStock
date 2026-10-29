@@ -1,14 +1,58 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
+import { TEMA_CLARO, TEMA_OSCURO, elegirTema, temaActual } from '../tema.js'
 import './Topbar.css'
 
-// Sin userName (pantalla de inicio de sesion) se muestra solo la marca. Con
-// opciones en menu, el nombre del usuario abre un menu con esas pantallas
-// (cada una: { id, path, texto }).
+// Arranca con el tema que aplico main.jsx: el login y la app muestran el
+// mismo estado aunque cada uno tenga su topbar.
+function SwitchTema() {
+  const [oscuro, setOscuro] = useState(() => temaActual() === TEMA_OSCURO)
+
+  function alternar() {
+    elegirTema(oscuro ? TEMA_CLARO : TEMA_OSCURO)
+    setOscuro(!oscuro)
+  }
+
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={oscuro}
+      aria-label="Modo oscuro"
+      className="topbar-tema"
+      title={oscuro ? 'Pasar a modo claro' : 'Pasar a modo oscuro'}
+      onClick={alternar}
+    >
+      <span className="topbar-tema-perilla" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          {oscuro ? (
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+          ) : (
+            <>
+              <circle cx="12" cy="12" r="4.5" />
+              <path
+                d="M12 2v2.5M12 19.5V22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2 12h2.5M19.5 12H22M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </>
+          )}
+        </svg>
+      </span>
+    </button>
+  )
+}
+
+// Sin userName (pantalla de inicio de sesion) se muestran solo la marca y el
+// switch de tema. El nombre del usuario abre un menu con las pantallas de
+// menu (cada una: { id, path, texto }) y, al final, la opcion de cerrar
+// sesion.
 function Topbar({ appName = 'EasyStock', userName, menu = [], onCerrarSesion }) {
   const [abierto, setAbierto] = useState(false)
   const menuRef = useRef(null)
   const botonRef = useRef(null)
+  const conMenu = menu.length > 0 || Boolean(onCerrarSesion)
 
   // El menu se cierra con un click afuera o con Escape, que devuelve el foco
   // al boton.
@@ -47,58 +91,75 @@ function Topbar({ appName = 'EasyStock', userName, menu = [], onCerrarSesion }) 
     <header className="topbar">
       <span className="topbar-brand">{appName}</span>
 
-      {userName && (
-        <div className="topbar-user">
-          {menu.length > 0 ? (
-            <div className="topbar-menu" ref={menuRef}>
-              <button
-                ref={botonRef}
-                type="button"
-                className="topbar-menu-boton"
-                aria-haspopup="menu"
-                aria-expanded={abierto}
-                onClick={() => setAbierto((actual) => !actual)}
-              >
-                {usuario}
-                <svg
-                  className="topbar-menu-flecha"
-                  viewBox="0 0 24 24"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M7 10l5 5 5-5H7Z" />
-                </svg>
-              </button>
+      <div className="topbar-acciones">
+        <SwitchTema />
 
-              {abierto && (
-                <ul className="topbar-menu-lista" role="menu">
-                  {menu.map((opcion) => (
-                    <li key={opcion.id} role="none">
-                      <Link
-                        role="menuitem"
-                        to={opcion.path}
-                        className="topbar-menu-opcion"
-                        onClick={() => setAbierto(false)}
-                      >
-                        {opcion.texto}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : (
-            usuario
-          )}
-          {onCerrarSesion && (
-            <button type="button" className="topbar-salir" onClick={onCerrarSesion}>
-              Cerrar sesion
-            </button>
-          )}
-        </div>
-      )}
+        {userName && (
+          <div className="topbar-user">
+            {conMenu ? (
+              <div className="topbar-menu" ref={menuRef}>
+                <button
+                  ref={botonRef}
+                  type="button"
+                  className="topbar-menu-boton"
+                  aria-haspopup="menu"
+                  aria-expanded={abierto}
+                  onClick={() => setAbierto((actual) => !actual)}
+                >
+                  {usuario}
+                  <svg
+                    className="topbar-menu-flecha"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 10l5 5 5-5H7Z" />
+                  </svg>
+                </button>
+
+                {abierto && (
+                  <ul className="topbar-menu-lista" role="menu">
+                    {menu.map((opcion) => (
+                      <li key={opcion.id} role="none">
+                        <Link
+                          role="menuitem"
+                          to={opcion.path}
+                          className="topbar-menu-opcion"
+                          onClick={() => setAbierto(false)}
+                        >
+                          {opcion.texto}
+                        </Link>
+                      </li>
+                    ))}
+                    {menu.length > 0 && onCerrarSesion && (
+                      <li role="separator" className="topbar-menu-separador" />
+                    )}
+                    {onCerrarSesion && (
+                      <li role="none">
+                        <button
+                          type="button"
+                          role="menuitem"
+                          className="topbar-menu-opcion topbar-menu-salir"
+                          onClick={() => {
+                            setAbierto(false)
+                            onCerrarSesion()
+                          }}
+                        >
+                          Cerrar sesion
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              usuario
+            )}
+          </div>
+        )}
+      </div>
     </header>
   )
 }

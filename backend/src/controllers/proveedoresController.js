@@ -1,38 +1,25 @@
 const { sequelize, Proveedor } = require("../models")
-const { literal } = require('sequelize');
+const { fn, col } = require('sequelize');
+const { contiene } = require('../utils/busqueda');
 
 // Las verificaciones corren antes, en middlewares/proveedoresMiddleware.js:
 // req.body llega validado y limpio, y req.proveedor es el proveedor de :nombre.
 
 // Cuenta de articulos asociados: la tabla del ABM la muestra y explica por que
-// una baja puede quedar frenada por la clave foranea (ON DELETE RESTRICT).
-const CANTIDAD_ARTICULOS = [
-  literal(
-    '(SELECT COUNT(*) FROM `productos` WHERE `productos`.`proveedor_id` = `Proveedor`.`id`)'
-  ),
-  'cantidadArticulos',
-];
+// una baja puede quedar frenada por la clave foranea (ON DELETE RESTRICT). Los
+// articulos se unen sin traer sus columnas y se cuentan por proveedor; un
+// proveedor sin articulos cuenta 0.
+const CON_CANTIDAD_ARTICULOS = {
+  attributes: { include: [[fn('COUNT', col('productos.id')), 'cantidadArticulos']] },
+  include: [{ association: 'productos', attributes: [] }],
+  group: ['Proveedor.id'],
+};
 
-const ATRIBUTOS = { include: [CANTIDAD_ARTICULOS] };
-
-// Escapa los comodines de LIKE (% y _) para buscarlos como texto literal.
-// El caracter de escape es "!" y no "\\": Sequelize descarta la barra invertida
-// al interpolar el literal y SQLite termina recibiendo ESCAPE ''.
-const ESCAPE_LIKE = '!';
-
-const patronBusqueda = (texto) => {
-  const escapado = texto.replace(/[!%_]/g, (caracter) => ESCAPE_LIKE + caracter);
-  return `%${escapado}%`;
-}
-
-// Sin texto buscado el patron queda '%%' y trae todos los proveedores.
-const FILTRO_BUSQUEDA = "`Proveedor`.`nombre` LIKE :patron ESCAPE '!'";
-
+// Sin texto buscado trae todos los proveedores.
 const obtenerProveedores = async (req, res) => {
   const proveedores = await Proveedor.findAll({
-    where: literal(FILTRO_BUSQUEDA),
-    replacements: { patron: patronBusqueda(req.query.buscar) },
-    attributes: ATRIBUTOS,
+    where: contiene('Proveedor.nombre', req.query.buscar),
+    ...CON_CANTIDAD_ARTICULOS,
     order: [['nombre', 'ASC']],
   });
 
@@ -40,7 +27,7 @@ const obtenerProveedores = async (req, res) => {
 }
 
 const obtenerProvNombre = async (req, res) => {
-  res.json(await req.proveedor.reload({ attributes: ATRIBUTOS }));
+  res.json(await req.proveedor.reload(CON_CANTIDAD_ARTICULOS));
 }
 
 // Alta, modificacion y baja van en una transaccion: el hook del modelo
@@ -51,14 +38,14 @@ const crearProveedor = async (req, res) => {
   const proveedor = await sequelize.transaction((transaction) =>
     Proveedor.create(req.body, { transaction, autor: req.sesion.autor() })
   );
-  res.status(201).json(await proveedor.reload({ attributes: ATRIBUTOS }));
+  res.status(201).json(await proveedor.reload(CON_CANTIDAD_ARTICULOS));
 }
 
 const modificarProveedor = async (req, res) => {
   await sequelize.transaction((transaction) =>
     req.proveedor.update(req.body, { transaction, autor: req.sesion.autor() })
   );
-  res.json(await req.proveedor.reload({ attributes: ATRIBUTOS }));
+  res.json(await req.proveedor.reload(CON_CANTIDAD_ARTICULOS));
 }
 
 const bajaProveedor = async (req, res) => {

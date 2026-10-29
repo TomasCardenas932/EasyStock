@@ -1,5 +1,7 @@
 'use strict';
 
+const { reconstruirTabla } = require('../utils/tablas');
+
 const TABLAS = ['ventas', 'movimientos'];
 
 /** @type {import('sequelize-cli').Migration} */
@@ -28,15 +30,39 @@ module.exports = {
     });
   },
 
-  async down(queryInterface) {
+  // Las tablas se rearman sin las dos columnas (removeColumn pierde el
+  // AUTOINCREMENT del id), como estaban antes de esta migracion.
+  async down(queryInterface, Sequelize) {
     await queryInterface.sequelize.transaction(async (transaction) => {
-      for (const tabla of TABLAS) {
-        for (const columna of ['usuario_id', 'usuario_nombre']) {
-          await queryInterface.sequelize.query(`ALTER TABLE ${tabla} DROP COLUMN ${columna};`, {
-            transaction,
-          });
+      await reconstruirTabla(
+        queryInterface,
+        'ventas',
+        {
+          id: { type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+          articulos: { type: Sequelize.JSON, allowNull: false },
+          fecha: { type: Sequelize.DATE, allowNull: false },
+          total: { type: Sequelize.INTEGER, allowNull: false },
+        },
+        { transaction }
+      );
+      await reconstruirTabla(
+        queryInterface,
+        'movimientos',
+        {
+          id: { type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+          fecha: { type: Sequelize.DATE, allowNull: false },
+          tipo: { type: Sequelize.STRING, allowNull: false },
+          entidad: { type: Sequelize.STRING, allowNull: false },
+          detalle: { type: Sequelize.STRING, allowNull: false },
+          identificador: { type: Sequelize.STRING, allowNull: false },
+          cantidad: { type: Sequelize.INTEGER, allowNull: true },
+          referencia: { type: Sequelize.STRING, allowNull: true },
+        },
+        {
+          indices: [{ fields: ['identificador'], unique: true, name: 'movimientos_identificador_unico' }],
+          transaction,
         }
-      }
+      );
     });
   },
 };

@@ -3,6 +3,7 @@
 // de docs/endpoints/ salen de correr las pruebas sobre estos datos, despues de
 // las migraciones y de los seeders admin-inicial y rol-empleado. Los carga
 // test/endpoints.test.js en la base temporal de los tests.
+const { Op } = require('sequelize');
 const { sequelize, Proveedor, Producto, Venta, Movimiento, Usuario, Rol } = require('../models');
 
 const PROVEEDORES = [
@@ -55,17 +56,9 @@ async function en([anio, mes, dia, hora, minuto], operacion) {
   const movimientosAntes = (await Movimiento.max('id')) ?? 0;
   const ventasAntes = (await Venta.max('id')) ?? 0;
   const resultado = await operacion();
-  // Mismo formato con el que Sequelize guarda las fechas en SQLite.
-  const fecha = new Date(anio, mes, dia, hora, minuto)
-    .toISOString()
-    .replace('T', ' ')
-    .replace('Z', ' +00:00');
-  await sequelize.query('UPDATE movimientos SET fecha = :fecha WHERE id > :antes', {
-    replacements: { fecha, antes: movimientosAntes },
-  });
-  await sequelize.query('UPDATE ventas SET fecha = :fecha WHERE id > :antes', {
-    replacements: { fecha, antes: ventasAntes },
-  });
+  const fecha = new Date(anio, mes, dia, hora, minuto);
+  await Movimiento.update({ fecha }, { where: { id: { [Op.gt]: movimientosAntes } } });
+  await Venta.update({ fecha }, { where: { id: { [Op.gt]: ventasAntes } } });
   return resultado;
 }
 

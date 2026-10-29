@@ -1,5 +1,7 @@
 'use strict';
 
+const { leerFilas } = require('../utils/tablas');
+
 // Pantalla de administracion de usuarios: se abre desde el menu del usuario y
 // sus rutas (/api/usuarios, /api/roles y /api/permisos) piden este permiso.
 const PERMISO = 'Usuarios';
@@ -18,14 +20,16 @@ module.exports = {
         transaction,
       });
 
-      const [[permiso]] = await queryInterface.sequelize.query(
-        'SELECT id FROM permisos WHERE nombre = ?;',
-        { replacements: [PERMISO], transaction }
-      );
-      const [roles] = await queryInterface.sequelize.query(
-        "SELECT id FROM roles WHERE nombre = 'admin';",
-        { transaction }
-      );
+      const [permiso] = await leerFilas(queryInterface, 'permisos', {
+        where: { nombre: PERMISO },
+        attributes: ['id'],
+        transaction,
+      });
+      const roles = await leerFilas(queryInterface, 'roles', {
+        where: { nombre: 'admin' },
+        attributes: ['id'],
+        transaction,
+      });
 
       if (roles.length > 0) {
         await queryInterface.bulkInsert(

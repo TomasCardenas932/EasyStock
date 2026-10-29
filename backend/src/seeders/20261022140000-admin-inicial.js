@@ -1,6 +1,7 @@
 'use strict';
 
 const { hashear } = require('../utils/contrasenas');
+const { leerFilas } = require('../utils/tablas');
 
 // Un permiso por cada pantalla de la barra lateral, con el mismo nombre.
 const PERMISOS = Object.values(require('../config/permisos'));
@@ -28,7 +29,8 @@ module.exports = {
     const fechas = { created_at: now, updated_at: now };
 
     await queryInterface.sequelize.transaction(async (transaction) => {
-      const [existentes] = await queryInterface.sequelize.query('SELECT nombre FROM permisos;', {
+      const existentes = await leerFilas(queryInterface, 'permisos', {
+        attributes: ['nombre'],
         transaction,
       });
       const cargados = new Set(existentes.map((permiso) => permiso.nombre));
@@ -42,13 +44,12 @@ module.exports = {
       }
       await queryInterface.bulkInsert('roles', [{ nombre: ROL, ...fechas }], { transaction });
 
-      const [[rol]] = await queryInterface.sequelize.query('SELECT id FROM roles WHERE nombre = ?;', {
-        replacements: [ROL],
+      const [rol] = await leerFilas(queryInterface, 'roles', {
+        where: { nombre: ROL },
+        attributes: ['id'],
         transaction,
       });
-      const [permisos] = await queryInterface.sequelize.query('SELECT id FROM permisos;', {
-        transaction,
-      });
+      const permisos = await leerFilas(queryInterface, 'permisos', { attributes: ['id'], transaction });
 
       await queryInterface.bulkInsert(
         'rol_permisos',

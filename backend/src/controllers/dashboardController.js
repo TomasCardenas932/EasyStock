@@ -1,4 +1,4 @@
-const { Op, col, literal } = require('sequelize');
+const { Op, col } = require('sequelize');
 const { Producto, Proveedor } = require('../models');
 
 // Cuantos articulos muestra cada lista del Dashboard: para reponer, los mas
@@ -18,12 +18,12 @@ const PARA_REPONER = {
 // Primero los sin stock, que son los mas urgentes, y despues los bajos;
 // dentro de cada grupo, por el cociente entre stock y umbral, de menor a
 // mayor. El codigo desempata los sin stock, que cuentan todos como cociente
-// 0: sin umbral, o con umbral 0, SQLite da NULL al dividir.
-const ORDEN_URGENCIA = [
-  [literal('`Producto`.`stock` = 0'), 'DESC'],
-  [literal('COALESCE(CAST(`Producto`.`stock` AS REAL) / `Producto`.`umbral_minimo`, 0)'), 'ASC'],
-  ['codigo', 'ASC'],
-];
+// 0, tengan o no umbral. Los bajos tienen umbral de 1 o mas: su stock es
+// mayor a 0 e igual o menor al umbral.
+const cociente = ({ stock, umbralMinimo }) => (stock === 0 ? 0 : stock / umbralMinimo);
+const compararCodigo = (a, b) => (a.codigo < b.codigo ? -1 : Number(a.codigo > b.codigo));
+const porUrgencia = (a, b) =>
+  Number(a.stock > 0) - Number(b.stock > 0) || cociente(a) - cociente(b) || compararCodigo(a, b);
 
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };
 
@@ -31,29 +31,31 @@ const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id'
 const SIN_PRECIO = { precioPublico: null };
 
 // Recuadros y listas de reposicion y de articulos sin precio del Dashboard
-// (FRD, SC001).
+// (FRD, SC001). Los articulos para reponer se ordenan aca: el cociente entre
+// stock y umbral no se puede pedir como orden a Sequelize sin escribir SQL.
 const obtenerResumen = async (req, res) => {
-  const [articulos, sinStock, paraReponer, sinPrecio, reponer, articulosSinPrecio] =
-    await Promise.all([
-      Producto.count(),
-      Producto.count({ where: { stock: 0 } }),
-      Producto.count({ where: PARA_REPONER }),
-      Producto.count({ where: SIN_PRECIO }),
-      Producto.findAll({
-        where: PARA_REPONER,
-        include: INCLUIR_PROVEEDOR,
-        order: ORDEN_URGENCIA,
-        limit: LIMITE_LISTA,
-      }),
-      Producto.findAll({
-        where: SIN_PRECIO,
-        include: INCLUIR_PROVEEDOR,
-        order: [['codigo', 'ASC']],
-        limit: LIMITE_LISTA,
-      }),
-    ]);
+  const [articulos, sinStock, sinPrecio, todosParaReponer, articulosSinPrecio] = await Promise.all([
+    Producto.count(),
+    Producto.count({ where: { stock: 0 } }),
+    Producto.count({ where: SIN_PRECIO }),
+    Producto.findAll({ where: PARA_REPONER, include: INCLUIR_PROVEEDOR }),
+    Producto.findAll({
+      where: SIN_PRECIO,
+      include: INCLUIR_PROVEEDOR,
+      order: [['codigo', 'ASC']],
+      limit: LIMITE_LISTA,
+    }),
+  ]);
+  const reponer = todosParaReponer.sort(porUrgencia).slice(0, LIMITE_LISTA);
 
-  res.json({ articulos, sinStock, paraReponer, sinPrecio, reponer, articulosSinPrecio });
+  res.json({
+    articulos,
+    sinStock,
+    paraReponer: todosParaReponer.length,
+    sinPrecio,
+    reponer,
+    articulosSinPrecio,
+  });
 };
 
 module.exports = {

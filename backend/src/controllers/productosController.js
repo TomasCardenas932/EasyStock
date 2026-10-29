@@ -1,24 +1,16 @@
-const { literal } = require('sequelize');
+const { Op } = require('sequelize');
 const { sequelize, Producto, Proveedor } = require('../models');
+const { contiene } = require('../utils/busqueda');
 
 // El proveedor viaja como objeto anidado: la tabla del ABM muestra el nombre.
 const INCLUIR_PROVEEDOR = { model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'] };
 
-const ESCAPE_LIKE = '!';
-
-const patronBusqueda = (texto) => {
-  const escapado = texto.replace(/[!%_]/g, (caracter) => ESCAPE_LIKE + caracter);
-  return `%${escapado}%`;
-};
-
-//el JOIN con proveedores trae otra columna `nombre` y sin calificar SQLite la rechaza por ambigua.
-const FILTRO_BUSQUEDA =
-  "(`Producto`.`codigo` LIKE :patron ESCAPE '!' OR `Producto`.`nombre` LIKE :patron ESCAPE '!')";
-
+// El JOIN con proveedores trae otra columna `nombre`: sin calificar, SQLite la
+// rechaza por ambigua.
 const obtenerProductos = async (req, res) => {
+  const { buscar } = req.query;
   const productos = await Producto.findAll({
-    where: literal(FILTRO_BUSQUEDA),
-    replacements: { patron: patronBusqueda(req.query.buscar) },
+    where: { [Op.or]: [contiene('Producto.codigo', buscar), contiene('Producto.nombre', buscar)] },
     include: INCLUIR_PROVEEDOR,
     order: [['nombre', 'ASC']],
   });

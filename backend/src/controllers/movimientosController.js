@@ -1,16 +1,20 @@
-const { literal } = require('sequelize');
+const { Op, fn, col, where } = require('sequelize');
 const { sequelize, Movimiento } = require('../models');
+const { empiezaCon } = require('../utils/busqueda');
 
-const FILTRO_BUSQUEDA =
-  "(substr(`identificador`, instr(`identificador`, '#')) = :texto" +
-  " OR strftime('%d/%m/%Y', `fecha`, 'localtime') LIKE :texto || '%')";
+// "#" y numero del identificador (alta#12 -> #12), para buscar por numero.
+const NUMERO = fn('substr', col('identificador'), fn('instr', col('identificador'), '#'));
+
+// Fecha en hora local, con el formato de la pantalla, para buscar por fecha o
+// por su comienzo (25/10).
+const FECHA = fn('strftime', '%d/%m/%Y', col('fecha'), 'localtime');
 
 // El id desempata movimientos guardados en el mismo instante (los articulos de
 // una misma venta).
 const obtenerMovimientos = async (req, res) => {
+  const { buscar } = req.query;
   const movimientos = await Movimiento.findAll({
-    where: literal(FILTRO_BUSQUEDA),
-    replacements: { texto: req.query.buscar },
+    where: { [Op.or]: [where(NUMERO, buscar), empiezaCon(FECHA, buscar)] },
     order: [
       ['fecha', 'DESC'],
       ['id', 'DESC'],

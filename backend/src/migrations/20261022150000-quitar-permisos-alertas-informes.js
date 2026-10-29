@@ -1,5 +1,7 @@
 'use strict';
 
+const { leerFilas } = require('../utils/tablas');
+
 // Pantallas que el FRD v1.1 saco del alcance: SC005 (las alertas de
 // reposicion pasan al Dashboard) y SC006 (informes de caja).
 const QUITADOS = ['Alertas', 'Informes'];
@@ -26,14 +28,16 @@ module.exports = {
         { transaction }
       );
 
-      const [roles] = await queryInterface.sequelize.query(
-        "SELECT id FROM roles WHERE nombre = 'admin';",
-        { transaction }
-      );
-      const [permisos] = await queryInterface.sequelize.query(
-        'SELECT id FROM permisos WHERE nombre IN (?);',
-        { replacements: [QUITADOS], transaction }
-      );
+      const roles = await leerFilas(queryInterface, 'roles', {
+        where: { nombre: 'admin' },
+        attributes: ['id'],
+        transaction,
+      });
+      const permisos = await leerFilas(queryInterface, 'permisos', {
+        where: { nombre: QUITADOS },
+        attributes: ['id'],
+        transaction,
+      });
 
       const asignaciones = roles.flatMap((rol) =>
         permisos.map((permiso) => ({ rol_id: rol.id, permiso_id: permiso.id, ...fechas }))

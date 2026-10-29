@@ -1,6 +1,7 @@
 'use strict';
 
 const { DASHBOARD, VENTAS } = require('../config/permisos');
+const { leerFilas } = require('../utils/tablas');
 
 // Rol para el personal de mostrador: solo ve el Dashboard y Ventas.
 const ROL = 'empleado';
@@ -16,14 +17,16 @@ module.exports = {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.bulkInsert('roles', [{ nombre: ROL, ...fechas }], { transaction });
 
-      const [[rol]] = await queryInterface.sequelize.query('SELECT id FROM roles WHERE nombre = ?;', {
-        replacements: [ROL],
+      const [rol] = await leerFilas(queryInterface, 'roles', {
+        where: { nombre: ROL },
+        attributes: ['id'],
         transaction,
       });
-      const [permisos] = await queryInterface.sequelize.query(
-        'SELECT id FROM permisos WHERE nombre IN (?);',
-        { replacements: [PERMISOS], transaction }
-      );
+      const permisos = await leerFilas(queryInterface, 'permisos', {
+        where: { nombre: PERMISOS },
+        attributes: ['id'],
+        transaction,
+      });
 
       await queryInterface.bulkInsert(
         'rol_permisos',

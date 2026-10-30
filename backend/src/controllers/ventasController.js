@@ -12,8 +12,13 @@ const registrarVenta = async (req, res) => {
   // medio, no queda stock descontado sin venta ni venta sin descontar.
   const venta = await sequelize.transaction(async (transaction) => {
     // BRD v1.2, regla 6: al confirmar la venta se descuentan las unidades.
+    // Otra venta pudo descontar entre la verificacion del middleware y esta
+    // transaccion: con el stock que quedo, el modelo rechaza un negativo y no
+    // se guarda nada. decrement no valida por su cuenta.
     for (const [producto, cantidad] of unidades) {
       await producto.decrement('stock', { by: cantidad, transaction });
+      await producto.reload({ transaction });
+      await producto.validate({ fields: ['stock'] });
     }
 
     const total = articulos.reduce(

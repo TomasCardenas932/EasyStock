@@ -13,7 +13,9 @@ module.exports = (sequelize, DataTypes) => {
     // Guarda un movimiento con su identificador: el tipo, "#" y el numero que
     // le toca dentro de ese tipo (alta#1, alta#2, venta#1...). Los movimientos
     // no se borran, asi que ese numero es la cantidad de movimientos del tipo
-    // mas uno. Corre en la transaccion de la operacion que lo genera.
+    // mas uno. Corre en la transaccion de la operacion que lo genera, que es
+    // IMMEDIATE (config/config.js): otra operacion no puede guardar un
+    // movimiento entre la cuenta y el alta, y dos no reciben el mismo numero.
     // Una cantidad en 0 (o sin cantidad) se guarda vacia: el movimiento no
     // cambio el stock de ningun articulo. autor es el usuario que hizo la
     // operacion (Usuario#autor); sin autor, como en los seeders, queda vacio.

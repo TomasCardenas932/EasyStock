@@ -15,6 +15,7 @@ const {
   validarAlta,
   validarModificacion,
   cargarPermiso,
+  verificarPermisoEditable,
 } = require('../middlewares/permisosMiddleware');
 
 const router = Router();
@@ -31,10 +32,17 @@ router.get('/:nombre', validarNombre, cargarPermiso, obtenerPermisoNombre);
 // POST /api/permisos -> alta
 router.post('/', validarAlta, crearPermiso);
 
-// PUT /api/permisos/:nombre -> modificacion
-router.put('/:nombre', validarNombre, validarModificacion, cargarPermiso, modificarPermiso);
+// PUT /api/permisos/:nombre -> modificacion, salvo los de las pantallas
+router.put(
+  '/:nombre',
+  validarNombre,
+  validarModificacion,
+  cargarPermiso,
+  verificarPermisoEditable,
+  modificarPermiso
+);
 
-// DELETE /api/permisos/:nombre -> baja
-router.delete('/:nombre', validarNombre, cargarPermiso, bajaPermiso);
+// DELETE /api/permisos/:nombre -> baja, salvo los de las pantallas
+router.delete('/:nombre', validarNombre, cargarPermiso, verificarPermisoEditable, bajaPermiso);
 
 module.exports = router;

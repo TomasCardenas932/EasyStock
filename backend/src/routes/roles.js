@@ -18,6 +18,7 @@ const {
   validarPermisos,
   cargarRol,
   cargarPermisos,
+  verificarPermisosPropios,
   verificarSinUsuarios,
 } = require('../middlewares/rolesMiddleware');
 
@@ -38,13 +39,15 @@ router.post('/', validarAlta, cargarPermisos, crearRol);
 // PUT /api/roles/:nombre -> modificacion del nombre
 router.put('/:nombre', validarNombre, validarModificacion, cargarRol, modificarRol);
 
-// PUT /api/roles/:nombre/permisos -> reemplaza los permisos del rol
+// PUT /api/roles/:nombre/permisos -> reemplaza los permisos del rol, sin
+// quitarle Usuarios al rol de la sesion
 router.put(
   '/:nombre/permisos',
   validarNombre,
   validarPermisos,
   cargarRol,
   cargarPermisos,
+  verificarPermisosPropios,
   asignarPermisos
 );
 

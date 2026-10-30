@@ -1,5 +1,6 @@
 'use strict';
 
+const { randomBytes } = require('crypto');
 const { hashear } = require('../utils/contrasenas');
 const { leerFilas } = require('../utils/tablas');
 
@@ -8,15 +9,26 @@ const PERMISOS = Object.values(require('../config/permisos'));
 
 const ROL = 'admin';
 
-// Usuario para el primer ingreso al sistema. La contrasena es de prueba:
-// cambiala antes de usar el sistema con datos reales.
+// Usuario para el primer ingreso al sistema. El repositorio es publico: el
+// email y el telefono son de ejemplo, y se cambian desde la pantalla de
+// Usuarios.
 const USUARIO = {
   nombre: 'Tomas',
   apellido: 'Cardenas',
-  email: 'tomascardenas932@gmail.com',
-  telefono: '11 61376740',
+  email: 'tomas.cardenas@example.com',
+  telefono: '11 12345678',
 };
-const CONTRASENA = '123456';
+
+// La contrasena tampoco esta en el codigo: sale de la variable de entorno
+// ADMIN_CONTRASENA o, sin ella, se genera al azar y se muestra una sola vez en
+// la consola al correr el seeder.
+function contrasenaInicial() {
+  if (process.env.ADMIN_CONTRASENA) return process.env.ADMIN_CONTRASENA;
+
+  const contrasena = randomBytes(9).toString('base64url');
+  console.log(`  > Contrasena de ${USUARIO.email}: ${contrasena} (cambiala desde Usuarios)`);
+  return contrasena;
+}
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -58,7 +70,7 @@ module.exports = {
       );
       await queryInterface.bulkInsert(
         'usuarios',
-        [{ ...USUARIO, contrasena: await hashear(CONTRASENA), rol_id: rol.id, ...fechas }],
+        [{ ...USUARIO, contrasena: await hashear(contrasenaInicial()), rol_id: rol.id, ...fechas }],
         { transaction }
       );
     });

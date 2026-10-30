@@ -237,7 +237,7 @@ module.exports = {
       etiqueta: 'Roles',
       resumen: 'Permisos del rol',
       descripcion:
-        'Reemplaza los permisos del rol por los de la lista. Vale en el proximo pedido de los usuarios con ese rol, sin volver a iniciar sesion.',
+        'Reemplaza los permisos del rol por los de la lista. Vale en el proximo pedido de los usuarios con ese rol, sin volver a iniciar sesion. Al rol de la sesion no se le puede quitar el permiso Usuarios.',
       permisos: [USUARIOS],
       parametros: [NOMBRE],
       cuerpo: ref('RolPermisos'),
@@ -304,6 +304,17 @@ module.exports = {
           body: { permisoIds: [2] },
           status: 404,
           respuesta: { error: 'No existe un rol con el nombre gerente' },
+        },
+        {
+          titulo: 'Quitarle Usuarios al propio rol',
+          sesion: 'admin',
+          params: { nombre: 'admin' },
+          body: { permisoIds: [2, 3, 4, 5] },
+          status: 409,
+          respuesta: {
+            error: 'No podes quitarle el permiso Usuarios a tu propio rol',
+            detalles: [{ campo: 'permisoIds', mensaje: 'Pedile a otro administrador que lo cambie' }],
+          },
         },
       ],
     },

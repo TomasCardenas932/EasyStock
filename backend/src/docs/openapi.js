@@ -20,7 +20,7 @@ const ETIQUETAS = [
 
 const DESCRIPCION = [
   'API de EasyStock. Cada endpoint trae la tabla de sus pruebas y, en los ejemplos, el pedido y la respuesta de cada una.',
-  '**Como probarla:** correr `POST /sesion` con "Try it out". Swagger guarda el token que devuelve y lo manda en los pedidos siguientes; tambien se puede pegar a mano en **Authorize**. El usuario del seeder admin-inicial es Tomas, con el email tomascardenas932@gmail.com y la contrasena de prueba 123456.',
+  '**Como probarla:** correr `POST /sesion` con "Try it out". Swagger guarda el token que devuelve y lo manda en los pedidos siguientes; tambien se puede pegar a mano en **Authorize**. El usuario del seeder admin-inicial es Tomas, con el email tomas.cardenas@example.com; su contrasena es la de la variable de entorno ADMIN_CONTRASENA o, sin ella, la que muestra el seeder en la consola. En las pruebas es demo-tomas.',
   '**Sesiones de las pruebas:** *admin* es Tomas (rol admin, todos los permisos); *empleado*, un usuario con el rol empleado (Dashboard y Ventas); *sin rol*, un usuario sin rol, que no tiene ningun permiso; *-*, un pedido sin token.',
   '**Respuestas de ejemplo:** salen de correr las pruebas en orden contra una base con los datos de ejemplo de docs/datosDeEjemplo.js (proveedores, articulos y ventas de octubre de 2026); `npm test` las vuelve a correr y verifica cada una. Con otra base cambian los ids, las fechas y el stock.',
   'Cualquier ruta que no existe responde 404 con `{ "error": "Ruta no encontrada" }`, y un cuerpo que no es JSON valido, 400.',

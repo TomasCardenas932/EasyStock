@@ -16,7 +16,7 @@ module.exports = {
         {
           titulo: 'Datos correctos',
           sesion: null,
-          body: { email: 'tomascardenas932@gmail.com', contrasena: '123456' },
+          body: { email: 'tomas.cardenas@example.com', contrasena: 'demo-tomas' },
           status: 200,
           respuesta: {
             token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzkzMDUwMDAwLCJleHAiOjE3OTMwNzg4MDB9.ejemplo-de-firma',
@@ -24,8 +24,8 @@ module.exports = {
               id: 1,
               nombre: 'Tomas',
               apellido: 'Cardenas',
-              email: 'tomascardenas932@gmail.com',
-              telefono: '11 61376740',
+              email: 'tomas.cardenas@example.com',
+              telefono: '11 12345678',
               rolId: 1,
               createdAt: '2026-10-26T19:26:25.718Z',
               updatedAt: '2026-10-26T19:26:25.718Z',
@@ -46,7 +46,7 @@ module.exports = {
         {
           titulo: 'Email con mayusculas',
           sesion: null,
-          body: { email: 'TomasCardenas932@Gmail.com', contrasena: '123456' },
+          body: { email: 'Tomas.Cardenas@Example.com', contrasena: 'demo-tomas' },
           status: 200,
           respuesta: {
             token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzkzMDUwMDAwLCJleHAiOjE3OTMwNzg4MDB9.ejemplo-de-firma',
@@ -54,8 +54,8 @@ module.exports = {
               id: 1,
               nombre: 'Tomas',
               apellido: 'Cardenas',
-              email: 'tomascardenas932@gmail.com',
-              telefono: '11 61376740',
+              email: 'tomas.cardenas@example.com',
+              telefono: '11 12345678',
               rolId: 1,
               createdAt: '2026-10-26T19:26:25.718Z',
               updatedAt: '2026-10-26T19:26:25.718Z',
@@ -76,21 +76,21 @@ module.exports = {
         {
           titulo: 'Contrasena incorrecta',
           sesion: null,
-          body: { email: 'tomascardenas932@gmail.com', contrasena: 'incorrecta' },
+          body: { email: 'tomas.cardenas@example.com', contrasena: 'incorrecta' },
           status: 401,
           respuesta: { error: 'Email o contrasena incorrectos.' },
         },
         {
           titulo: 'Email inexistente',
           sesion: null,
-          body: { email: 'pedro@example.com', contrasena: '123456' },
+          body: { email: 'pedro@example.com', contrasena: 'demo-pedro' },
           status: 401,
           respuesta: { error: 'Email o contrasena incorrectos.' },
         },
         {
           titulo: 'Falta la contrasena',
           sesion: null,
-          body: { email: 'tomascardenas932@gmail.com' },
+          body: { email: 'tomas.cardenas@example.com' },
           status: 400,
           respuesta: {
             error: 'La contrasena es obligatoria',
@@ -100,7 +100,7 @@ module.exports = {
         {
           titulo: 'Email con otro formato',
           sesion: null,
-          body: { email: 'Tomas', contrasena: '123456' },
+          body: { email: 'Tomas', contrasena: 'demo-tomas' },
           status: 400,
           respuesta: {
             error: 'El email no es valido',
@@ -124,8 +124,8 @@ module.exports = {
             id: 1,
             nombre: 'Tomas',
             apellido: 'Cardenas',
-            email: 'tomascardenas932@gmail.com',
-            telefono: '11 61376740',
+            email: 'tomas.cardenas@example.com',
+            telefono: '11 12345678',
             rolId: 1,
             createdAt: '2026-10-26T19:26:25.718Z',
             updatedAt: '2026-10-26T19:26:25.718Z',

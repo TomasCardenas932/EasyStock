@@ -133,7 +133,7 @@ module.exports = {
     put: {
       etiqueta: 'Permisos',
       resumen: 'Cambio de nombre del permiso',
-      descripcion: 'Si se cambia el de una pantalla, la ruta deja de reconocerlo: hay que cambiar tambien config/permisos.js.',
+      descripcion: 'Los permisos de las pantallas (config/permisos.js) no se pueden renombrar: las rutas los piden por su nombre.',
       permisos: [USUARIOS],
       parametros: [NOMBRE],
       cuerpo: ref('PermisoModificacion'),
@@ -171,12 +171,22 @@ module.exports = {
           status: 404,
           respuesta: { error: 'No existe un permiso con el nombre Compras' },
         },
+        {
+          titulo: 'Permiso de una pantalla',
+          sesion: 'admin',
+          params: { nombre: USUARIOS },
+          body: { nombre: 'Administracion' },
+          status: 409,
+          respuesta: {
+            error: 'El permiso Usuarios es de una pantalla del sistema: no se puede modificar ni dar de baja',
+          },
+        },
       ],
     },
     delete: {
       etiqueta: 'Permisos',
       resumen: 'Baja de permiso',
-      descripcion: 'Se lo quita a los roles que lo tenian.',
+      descripcion: 'Se lo quita a los roles que lo tenian. Los permisos de las pantallas no se pueden dar de baja.',
       permisos: [USUARIOS],
       parametros: [NOMBRE],
       casos: [
@@ -187,6 +197,15 @@ module.exports = {
           params: { nombre: 'Compras' },
           status: 404,
           respuesta: { error: 'No existe un permiso con el nombre Compras' },
+        },
+        {
+          titulo: 'Permiso de una pantalla',
+          sesion: 'admin',
+          params: { nombre: USUARIOS },
+          status: 409,
+          respuesta: {
+            error: 'El permiso Usuarios es de una pantalla del sistema: no se puede modificar ni dar de baja',
+          },
         },
       ],
     },

@@ -3,6 +3,9 @@ const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { validar } = require('./validar');
 const { esquemaNombre, esquemaAlta, esquemaModificacion } = require('../schemas/permisosSchema');
 
+// Permisos de las pantallas: las rutas los piden por su nombre.
+const DE_PANTALLAS = Object.values(require('../config/permisos'));
+
 const validarNombre = validar({ params: esquemaNombre });
 
 const validarAlta = validar({ body: esquemaAlta });
@@ -22,9 +25,26 @@ const cargarPermiso = async (req, res, next) => {
   next();
 };
 
+// Renombrar o dar de baja el permiso de una pantalla dejaria a todos los roles
+// sin ella, y sin Usuarios nadie podria volver a asignarla. Corre despues de
+// cargarPermiso.
+const verificarPermisoEditable = (req, res, next) => {
+  const { nombre } = req.permiso;
+
+  if (DE_PANTALLAS.includes(nombre)) {
+    throw new ErrorHttp(
+      409,
+      `El permiso ${nombre} es de una pantalla del sistema: no se puede modificar ni dar de baja`
+    );
+  }
+
+  next();
+};
+
 module.exports = {
   validarNombre,
   validarAlta,
   validarModificacion,
   cargarPermiso,
+  verificarPermisoEditable,
 };

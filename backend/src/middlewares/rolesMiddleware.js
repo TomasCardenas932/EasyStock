@@ -1,5 +1,6 @@
 const { Rol, Permiso, Usuario } = require('../models');
 const ErrorHttp = require('../Excepciones/ErrorHttp');
+const { USUARIOS } = require('../config/permisos');
 const { validar } = require('./validar');
 const {
   esquemaNombre,
@@ -47,6 +48,22 @@ const cargarPermisos = async (req, res, next) => {
   next();
 };
 
+// El usuario de la sesion no puede quitarle a su propio rol el permiso
+// Usuarios: perderia la pantalla en el pedido siguiente, igual que todos los
+// que comparten el rol, y si no queda otro rol con Usuarios nadie podria
+// devolverselo. Corre despues de cargarRol y cargarPermisos.
+const verificarPermisosPropios = (req, res, next) => {
+  const conservaUsuarios = req.permisos.some((permiso) => permiso.nombre === USUARIOS);
+
+  if (req.rol.id === req.sesion.rolId && !conservaUsuarios) {
+    throw new ErrorHttp(409, `No podes quitarle el permiso ${USUARIOS} a tu propio rol`, {
+      detalles: [{ campo: 'permisoIds', mensaje: 'Pedile a otro administrador que lo cambie' }],
+    });
+  }
+
+  next();
+};
+
 // La clave foranea de usuarios (ON DELETE RESTRICT) frenaria la baja igual;
 // aca se corta antes para explicar el motivo.
 const verificarSinUsuarios = async (req, res, next) => {
@@ -69,5 +86,6 @@ module.exports = {
   validarPermisos,
   cargarRol,
   cargarPermisos,
+  verificarPermisosPropios,
   verificarSinUsuarios,
 };

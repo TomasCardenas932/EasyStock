@@ -45,7 +45,9 @@ Para poder usar el sistema se debe entrar a la terminal de windows y en la carpe
     npm run dev
     ```
 
-4. Abrir http://localhost:5173 e iniciar sesión con el email y la contraseña del usuario administrador que carga el seeder `backend/src/seeders/20261022140000-admin-inicial.js`. Desde el menú del usuario, arriba a la derecha, se administran los usuarios y se cierra la sesión; el switch de al lado alterna entre el modo claro y el oscuro.
+4. Abrir http://localhost:5173 e iniciar sesión con el usuario administrador que carga el seeder `backend/src/seeders/20261022140000-admin-inicial.js`: el email es `tomas.cardenas@example.com` y la contraseña la muestra `npm run db:seed` en la consola (o es la de la variable de entorno `ADMIN_CONTRASENA`, si se definió antes de correrlo). Desde el menú del usuario, arriba a la derecha, se administran los usuarios y se cierra la sesión; el switch de al lado alterna entre el modo claro y el oscuro.
+
+    Las sesiones se firman con el secreto de la variable de entorno `SESION_SECRETO`. Sin ella, el backend genera uno al azar la primera vez y lo guarda en `backend/src/database/sesion.secreto`, que no se sube al repositorio. Con `NODE_ENV=production` la variable es obligatoria.
 
 5. La documentación de la API, con las pruebas de cada endpoint, está en Swagger: con el backend corriendo, abrir http://localhost:3001/api-docs (o http://localhost:3001/api/docs). Desde ahí se pueden probar los endpoints con "Try it out", después de iniciar sesión con `POST /sesion`.
 

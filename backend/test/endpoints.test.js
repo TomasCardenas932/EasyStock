@@ -24,10 +24,14 @@ const SRC = path.join(__dirname, '..', 'src');
 // suyos.
 const SEEDERS = ['20261022140000-admin-inicial.js', '20261026130000-rol-empleado.js'];
 
+// Contrasena con la que el seeder admin-inicial carga a Tomas: sin la variable
+// la generaria al azar.
+process.env.ADMIN_CONTRASENA = 'demo-tomas';
+
 // Usuario de cada sesion de las pruebas: Tomas es el del seeder admin-inicial y
 // los otros dos, de los datos de ejemplo.
 const CREDENCIALES = {
-  admin: { email: 'tomascardenas932@gmail.com', contrasena: '123456' },
+  admin: { email: 'tomas.cardenas@example.com', contrasena: process.env.ADMIN_CONTRASENA },
   empleado: { email: 'juan.lopez@example.com', contrasena: 'demo-juan' },
   'sin rol': { email: 'sofia.paz@example.com', contrasena: 'demo-sofia' },
 };

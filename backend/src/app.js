@@ -4,16 +4,36 @@ const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const ventasRouter = require('./routes/ventas');
 const movimientosRouter = require('./routes/movimientos');
+const dashboardRouter = require('./routes/dashboard');
+const usuariosRouter = require('./routes/usuarios');
+const rolesRouter = require('./routes/roles');
+const permisosRouter = require('./routes/permisos');
+const sesionRouter = require('./routes/sesion');
+const docsRouter = require('./routes/docs');
+const { requiereSesion } = require('./middlewares/sesionMiddleware');
 const ErrorHttp = require('./Excepciones/ErrorHttp');
 
 const app = express();
 
 app.use(express.json());
 
+app.use('/api/sesion', sesionRouter);
+
+// Documentacion de la API (Swagger UI), en /api/docs y en /api-docs. Se ve sin
+// sesion; para probar los endpoints hay que iniciarla desde la propia pagina.
+app.use(['/api/docs', '/api-docs'], docsRouter);
+
+// Todo lo que sigue necesita una sesion iniciada (FRD, regla 15).
+app.use('/api', requiereSesion);
+
 app.use('/api/productos', productosRouter);
 app.use('/api/proveedores', proveedoresRouter);
 app.use('/api/ventas', ventasRouter);
 app.use('/api/movimientos', movimientosRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/usuarios', usuariosRouter);
+app.use('/api/roles', rolesRouter);
+app.use('/api/permisos', permisosRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });

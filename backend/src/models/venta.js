@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
           isInt: { msg: 'El total debe ser un numero entero' },
           min: { args: [0], msg: 'El total no puede ser negativo' },
           // El total se deriva de los articulos: si no coincide, el registro
-          // quedaria inconsistente para los informes de ventas.
+          // quedaria inconsistente.
           coincideConArticulos(total) {
             // Con un total o una lista invalidos no hay comparacion confiable;
             // esos errores ya los informan los otros validadores.
@@ -73,6 +73,17 @@ module.exports = (sequelize, DataTypes) => {
             }
           },
         },
+      },
+      usuarioId: {
+        // Usuario que registro la venta (BRD, CB-07). Sin clave foranea: la
+        // venta queda aunque el usuario se de de baja.
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      usuarioNombre: {
+        // Nombre y apellido del usuario al momento de la venta.
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {
@@ -94,7 +105,7 @@ module.exports = (sequelize, DataTypes) => {
         // venta, con las unidades vendidas en negativo. Se guardan de a uno:
         // cada identificador sale de contar los movimientos de venta que ya
         // estan guardados.
-        async afterCreate(venta, { transaction }) {
+        async afterCreate(venta, { transaction, autor }) {
           for (const articulo of venta.articulos) {
             await sequelize.models.Movimiento.registrar(
               {
@@ -103,7 +114,7 @@ module.exports = (sequelize, DataTypes) => {
                 detalle: `${articulo.codigo} - ${articulo.nombre}`,
                 cantidad: -articulo.cantidad,
               },
-              { transaction }
+              { transaction, autor }
             );
           }
         },

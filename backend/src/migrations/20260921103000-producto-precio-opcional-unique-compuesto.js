@@ -1,5 +1,7 @@
 'use strict';
 
+const { leerFilas, copiarFilas } = require('../utils/tablas');
+
 const COLUMNAS = [
   'id',
   'codigo',
@@ -65,12 +67,7 @@ function definicion(Sequelize, { precioPublicoObligatorio, codigoUnico }) {
 async function reconstruirTabla(queryInterface, columnas, indices) {
   await queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.createTable('productos_tmp', columnas, { transaction });
-
-    const lista = COLUMNAS.join(', ');
-    await queryInterface.sequelize.query(
-      `INSERT INTO productos_tmp (${lista}) SELECT ${lista} FROM productos;`,
-      { transaction }
-    );
+    await copiarFilas(queryInterface, 'productos', 'productos_tmp', COLUMNAS, { transaction });
 
     await queryInterface.dropTable('productos', { transaction });
     await queryInterface.renameTable('productos_tmp', 'productos', { transaction });
@@ -83,9 +80,11 @@ async function reconstruirTabla(queryInterface, columnas, indices) {
   });
 }
 
-async function contar(queryInterface, sql) {
-  const [filas] = await queryInterface.sequelize.query(sql);
-  return Number(filas[0].total);
+// Cantidad de codigos que tienen mas de un producto.
+function codigosRepetidos(filas) {
+  const vistos = new Map();
+  for (const { codigo } of filas) vistos.set(codigo, (vistos.get(codigo) ?? 0) + 1);
+  return [...vistos.values()].filter((cantidad) => cantidad > 1).length;
 }
 
 /** @type {import('sequelize-cli').Migration} */
@@ -105,10 +104,9 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    const sinPrecio = await contar(
-      queryInterface,
-      'SELECT COUNT(*) AS total FROM productos WHERE precio_publico IS NULL;'
-    );
+    const sinPrecio = (
+      await leerFilas(queryInterface, 'productos', { where: { precio_publico: null }, attributes: ['id'] })
+    ).length;
     if (sinPrecio > 0) {
       throw new Error(
         `No se puede revertir: hay ${sinPrecio} producto(s) sin precio al publico. ` +
@@ -116,10 +114,7 @@ module.exports = {
       );
     }
 
-    const repetidos = await contar(
-      queryInterface,
-      'SELECT COUNT(*) AS total FROM (SELECT codigo FROM productos GROUP BY codigo HAVING COUNT(*) > 1);'
-    );
+    const repetidos = codigosRepetidos(await leerFilas(queryInterface, 'productos', { attributes: ['codigo'] }));
     if (repetidos > 0) {
       throw new Error(
         `No se puede revertir: hay ${repetidos} codigo(s) repetidos entre proveedores. ` +

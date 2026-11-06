@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Modal from '../Modal.jsx'
-import BuscarPorClave from '../BuscarPorClave.jsx'
-import { eliminarProducto, obtenerProducto } from '../../api/productos.js'
+import BuscarProducto from './BuscarProducto.jsx'
+import { eliminarProducto } from '../../api/productos.js'
 import '../abm.css'
 
 function ConfirmarBaja({ producto, onVolver, onConfirmar }) {
@@ -72,7 +72,7 @@ function BajaProducto({ onClose, onExito }) {
   const [producto, setProducto] = useState(null)
 
   async function handleConfirmar() {
-    await eliminarProducto(producto.codigo)
+    await eliminarProducto(producto.codigo, producto.proveedorId)
     onExito(`Articulo ${producto.codigo} dado de baja`)
   }
 
@@ -85,12 +85,8 @@ function BajaProducto({ onClose, onExito }) {
           onConfirmar={handleConfirmar}
         />
       ) : (
-        <BuscarPorClave
+        <BuscarProducto
           descripcion="Ingresa el codigo del articulo que queres dar de baja."
-          etiqueta="Codigo del articulo"
-          placeholder="Ej: FIL-0001"
-          mensajeVacio="Ingresa el codigo del articulo"
-          obtener={obtenerProducto}
           onEncontrado={setProducto}
           onCancelar={onClose}
         />

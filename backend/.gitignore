@@ -2,4 +2,7 @@ node_modules
 *.log
 
 # Bases de datos locales (se regeneran con npm run db:migrate)
-database/*.sqlite
+src/database/*.sqlite
+
+# Secreto local de las sesiones (config/sesion.js): se genera solo
+src/database/sesion.secreto

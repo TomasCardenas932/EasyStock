@@ -1,5 +1,7 @@
 'use strict';
 
+const { leerFilas, reconstruirTabla } = require('../utils/tablas');
+
 const INDICE_UNICO = 'movimientos_identificador_unico';
 
 /** @type {import('sequelize-cli').Migration} */
@@ -42,14 +44,16 @@ module.exports = {
 
     // Los movimientos ya cargados se numeran por tipo en el orden en que se
     // guardaron.
-    await queryInterface.sequelize.query(`
-      INSERT INTO movimientos_nueva (id, fecha, tipo, entidad, detalle, identificador)
-      SELECT id, fecha, tipo, entidad, detalle, (
-        SELECT movimiento.tipo || '#' || COUNT(*) FROM movimientos AS anterior
-        WHERE anterior.tipo = movimiento.tipo AND anterior.id <= movimiento.id
-      )
-      FROM movimientos AS movimiento;
-    `);
+    const movimientos = await leerFilas(queryInterface, 'movimientos', { order: [['id', 'ASC']] });
+    const cantidadPorTipo = new Map();
+    const numerados = movimientos.map((movimiento) => {
+      const numero = (cantidadPorTipo.get(movimiento.tipo) ?? 0) + 1;
+      cantidadPorTipo.set(movimiento.tipo, numero);
+      return { ...movimiento, identificador: `${movimiento.tipo}#${numero}` };
+    });
+    if (numerados.length > 0) {
+      await queryInterface.bulkInsert('movimientos_nueva', numerados);
+    }
 
     await queryInterface.dropTable('movimientos');
     await queryInterface.renameTable('movimientos_nueva', 'movimientos');
@@ -60,9 +64,22 @@ module.exports = {
     });
   },
 
-  // DROP COLUMN no acepta columnas indexadas: primero se quita el indice.
-  async down(queryInterface) {
-    await queryInterface.removeIndex('movimientos', INDICE_UNICO);
-    await queryInterface.sequelize.query('ALTER TABLE movimientos DROP COLUMN identificador;');
+  // La tabla se rearma sin la columna, como la dejaba create-movimiento: el
+  // indice del identificador se va con la tabla original.
+  async down(queryInterface, Sequelize) {
+    await queryInterface.sequelize.transaction((transaction) =>
+      reconstruirTabla(
+        queryInterface,
+        'movimientos',
+        {
+          id: { type: Sequelize.INTEGER, allowNull: false, autoIncrement: true, primaryKey: true },
+          fecha: { type: Sequelize.DATE, allowNull: false },
+          tipo: { type: Sequelize.STRING, allowNull: false },
+          entidad: { type: Sequelize.STRING, allowNull: false },
+          detalle: { type: Sequelize.STRING, allowNull: false },
+        },
+        { transaction }
+      )
+    );
   },
 };

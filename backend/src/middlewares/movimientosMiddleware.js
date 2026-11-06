@@ -1,26 +1,24 @@
-const Joi = require('joi');
+const { Producto } = require('../models');
+const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { validar } = require('./validar');
+const { esquemaBusqueda, esquemaEntrada } = require('../schemas/movimientosSchema');
 
-const SOLO_FECHA_O_IDENTIFICADOR =
-  'Busca por fecha (dd/mm/aaaa) o por numero de identificador (#302)';
+const validarBusqueda = validar({ query: esquemaBusqueda });
 
+const validarEntrada = validar({ body: esquemaEntrada });
 
-const validarBusqueda = validar({
-  query: Joi.object({
-    buscar: Joi.string()
-      .trim()
-      .replace(/^#$/, '')
-      // Dia y mes de un digito se completan con un cero, como los muestra la
-      // pantalla: "7/1/2026" busca "07/01/2026".
-      .replace(/(?<inicio>^|\/)(?<digito>\d)(?=\/)/g, '$<inicio>0$<digito>')
-      .pattern(/^(#\d+|[\d/]*)$/)
-      .allow('')
-      .default('')
-      .label('La busqueda')
-      .messages({ 'string.pattern.base': SOLO_FECHA_O_IDENTIFICADOR }),
-  }),
-});
+// Deja en req.producto el articulo al que se le suma el stock.
+const cargarProductoEntrada = async (req, res, next) => {
+  const producto = await Producto.findByPk(req.body.productoId);
+  if (!producto) {
+    throw new ErrorHttp(404, 'El articulo de la entrada ya no existe');
+  }
+  req.producto = producto;
+  next();
+};
 
 module.exports = {
   validarBusqueda,
+  validarEntrada,
+  cargarProductoEntrada,
 };

@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import Modal from '../Modal.jsx'
-import BuscarPorClave from '../BuscarPorClave.jsx'
+import BuscarProducto from './BuscarProducto.jsx'
 import ProductoForm from './ProductoForm.jsx'
-import { actualizarProducto, obtenerProducto } from '../../api/productos.js'
+import { actualizarProducto } from '../../api/productos.js'
 
 function ModificarProducto({ onClose, onExito }) {
   const [producto, setProducto] = useState(null)
 
   async function handleGuardar(datos) {
-    const actualizado = await actualizarProducto(producto.codigo, datos)
+    // Con el proveedor que tenia, por si el codigo se repite (regla 13).
+    const actualizado = await actualizarProducto(producto.codigo, producto.proveedorId, datos)
     onExito(`Articulo ${actualizado.codigo} modificado`)
   }
 
@@ -22,12 +23,8 @@ function ModificarProducto({ onClose, onExito }) {
           onCancelar={onClose}
         />
       ) : (
-        <BuscarPorClave
+        <BuscarProducto
           descripcion="Ingresa el codigo del articulo que queres modificar."
-          etiqueta="Codigo del articulo"
-          placeholder="Ej: FIL-0001"
-          mensajeVacio="Ingresa el codigo del articulo"
-          obtener={obtenerProducto}
           onEncontrado={setProducto}
           onCancelar={onClose}
         />

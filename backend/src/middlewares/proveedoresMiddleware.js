@@ -1,18 +1,9 @@
-const Joi = require('joi');
 const { Proveedor } = require('../models');
 const ErrorHttp = require('../Excepciones/ErrorHttp');
 const { validar } = require('./validar');
+const { esquemaNombre, esquemaAlta, esquemaModificacion } = require('../schemas/proveedoresSchema');
 
-const nombre = () => Joi.string().trim().label('El nombre');
-
-const esquemaAlta = Joi.object({ nombre: nombre().required() });
-
-// En la modificacion viajan solo los campos que cambian.
-const esquemaModificacion = Joi.object({ nombre: nombre() });
-
-const validarNombre = validar({
-  params: Joi.object({ nombre: nombre().required() }),
-});
+const validarNombre = validar({ params: esquemaNombre });
 
 const validarAlta = validar({ body: esquemaAlta });
 

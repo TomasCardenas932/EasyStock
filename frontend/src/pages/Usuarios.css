@@ -1,0 +1,17 @@
+.usuarios-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Botones de cada fila, mas chicos que los del encabezado. */
+.usuarios-acciones .btn {
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+.usuarios-propio {
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+}

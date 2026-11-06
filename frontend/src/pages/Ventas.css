@@ -35,7 +35,7 @@
 }
 
 /* El PNG es negro sobre transparente: se invierte para que se vea blanco
-   sobre el fondo negro del boton. */
+   sobre el fondo verde del boton. */
 .ventas-registrar-icono {
   width: 22px;
   height: 22px;
@@ -48,15 +48,15 @@
   padding: 10px 14px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--gray-0);
-  background: var(--gray-900);
+  color: var(--on-accent);
+  background: var(--accent);
   border-radius: 6px;
 }
 
 .ventas-registrar-resultado.is-error {
-  color: var(--gray-900);
-  background: var(--gray-100);
-  border-left: 4px solid var(--gray-1000);
+  color: var(--text);
+  background: var(--danger-soft);
+  border-left: 4px solid var(--danger);
   border-radius: 0;
 }
 
@@ -86,20 +86,20 @@
 }
 
 .ventas-lista tbody tr:focus-visible {
-  outline: 2px solid var(--gray-1000);
+  outline: 2px solid var(--focus);
   outline-offset: -2px;
 }
 
 /* Fila elegida: fondo marcado y barra a la izquierda, como el item activo de
    la sidebar. */
 .ventas-lista tbody tr.is-seleccionado td {
-  background: var(--gray-200);
-  color: var(--gray-1000);
+  background: var(--accent-soft);
+  color: var(--accent-text);
   font-weight: 600;
 }
 
 .ventas-lista tbody tr.is-seleccionado td:first-child {
-  box-shadow: inset 3px 0 0 var(--gray-1000);
+  box-shadow: inset 3px 0 0 var(--accent-indicator);
 }
 
 /* Columna derecha: buscador arriba y articulos agregados debajo. Ocupa el
@@ -118,7 +118,7 @@
   margin: 0 0 8px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--gray-900);
+  color: var(--text);
 }
 
 .ventas-buscador {
@@ -160,8 +160,8 @@
   gap: 16px;
   margin-top: 12px;
   padding: 14px 16px;
-  background: var(--gray-1000);
-  color: var(--gray-0);
+  background: var(--accent-strong);
+  color: var(--on-accent);
   border-radius: 6px;
 }
 
@@ -171,9 +171,12 @@
   letter-spacing: 0.3px;
 }
 
+/* mint-leaf sobre stormy-teal llega al contraste de texto grande, no al
+   de texto comun: sirve para el monto pero no para la etiqueta. */
 .ventas-total-monto {
   font-size: 22px;
   font-weight: 700;
+  color: var(--mint-leaf);
   font-variant-numeric: tabular-nums;
 }
 

@@ -1,5 +1,8 @@
 'use strict';
 
+const { Op } = require('sequelize');
+const { leerFilas, copiarFilas } = require('../utils/tablas');
+
 const INDICE_UNICO = 'productos_codigo_proveedor';
 
 const COMUNES = ['id', 'codigo', 'nombre', 'stock', 'costo', 'precio_publico', 'created_at', 'updated_at'];
@@ -62,13 +65,10 @@ function definicion(Sequelize, { columnaProveedor, conClaveForanea }) {
 async function reconstruirTabla(queryInterface, columnas, { origen, destino, indices }) {
   await queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.createTable('productos_tmp', columnas, { transaction });
-
-    const columnasDestino = [...COMUNES, destino].join(', ');
-    const columnasOrigen = [...COMUNES, origen].join(', ');
-    await queryInterface.sequelize.query(
-      `INSERT INTO productos_tmp (${columnasDestino}) SELECT ${columnasOrigen} FROM productos;`,
-      { transaction }
-    );
+    await copiarFilas(queryInterface, 'productos', 'productos_tmp', [...COMUNES, destino], {
+      renombrar: { [destino]: origen },
+      transaction,
+    });
 
     await queryInterface.dropTable('productos', { transaction });
     await queryInterface.renameTable('productos_tmp', 'productos', { transaction });
@@ -89,19 +89,22 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     // Las filas que apuntan a un proveedor inexistente romperian la clave
     // foranea al copiarlas: se les borra la referencia invalida.
-    const CONDICION = 'proveedor IS NOT NULL AND proveedor NOT IN (SELECT id FROM proveedores)';
+    const proveedores = await leerFilas(queryInterface, 'proveedores', { attributes: ['id'] });
+    const existentes = new Set(proveedores.map((proveedor) => proveedor.id));
+    const conProveedor = await leerFilas(queryInterface, 'productos', {
+      where: { proveedor: { [Op.ne]: null } },
+      attributes: ['id', 'proveedor'],
+    });
+    const huerfanas = conProveedor.filter((producto) => !existentes.has(producto.proveedor));
 
-    const [conteo] = await queryInterface.sequelize.query(
-      `SELECT COUNT(*) AS total FROM productos WHERE ${CONDICION};`
-    );
-    const huerfanas = Number(conteo[0].total);
-
-    if (huerfanas > 0) {
-      await queryInterface.sequelize.query(
-        `UPDATE productos SET proveedor = NULL WHERE ${CONDICION};`
+    if (huerfanas.length > 0) {
+      await queryInterface.bulkUpdate(
+        'productos',
+        { proveedor: null },
+        { id: huerfanas.map((producto) => producto.id) }
       );
       console.log(
-        `  > ${huerfanas} producto(s) apuntaban a un proveedor inexistente: quedaron sin proveedor.`
+        `  > ${huerfanas.length} producto(s) apuntaban a un proveedor inexistente: quedaron sin proveedor.`
       );
     }
 

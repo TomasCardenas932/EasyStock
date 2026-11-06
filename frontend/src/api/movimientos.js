@@ -9,4 +9,9 @@ const listarMovimientos = (buscar = '', options) => {
   return request(BASE + query, options)
 }
 
-export { listarMovimientos }
+// Suma unidades al stock de un articulo. Responde con el movimiento y el
+// articulo con su stock nuevo.
+const registrarEntrada = (entrada) =>
+  request(`${BASE}/entradas`, { method: 'POST', body: entrada })
+
+export { listarMovimientos, registrarEntrada }
